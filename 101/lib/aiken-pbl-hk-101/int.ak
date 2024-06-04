@@ -22,7 +22,7 @@ test int_whole_division_remainder() {
   14 % 5 == 4
 }
 
-test comparison () {
+test comparison() {
   let greater_than = 3 > 2
   let less_than = 2 < 3
   let greater_than_or_equal = 3 >= 3
