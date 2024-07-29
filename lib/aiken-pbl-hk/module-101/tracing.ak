@@ -9,18 +9,13 @@ test m101_trace_message() {
   10 % 2 == 0
 }
 
-type MaybeSomething {
-  Something { something: ByteArray }
-  Nothing
-}
-
-fn maybe_something() -> MaybeSomething {
-  Nothing
+fn maybe_something() -> Option<ByteArray> {
+  None
 }
 
 test m101_trace_message2() {
   trace @"hello"
-  expect Something { something: _something }: MaybeSomething = maybe_something()
+  expect Some(_something): Option<ByteArray> = maybe_something()
   trace @"world"
   True
 }
