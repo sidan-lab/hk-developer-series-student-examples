@@ -4,7 +4,7 @@ fn get_bytearray_data() -> Data {
   data
 }
 
-test m101_unsafe_conversion() {
+test m101_p8_unsafe_conversion() {
   // let data = get_bytearray_data()
   expect data: ByteArray = get_bytearray_data()
   data == "hello world"

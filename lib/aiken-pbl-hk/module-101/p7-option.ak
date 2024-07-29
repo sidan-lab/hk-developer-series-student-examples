@@ -9,13 +9,13 @@ fn get_maybe_something(
   }
 }
 
-test m101_unsafe_type_converion() {
+test m101_p7_unsafe_type_converion() {
   expect Some(something): Option<ByteArray> =
     get_maybe_something(True, "hello world")
   something == "hello world"
 }
 
-test m101_safe_type_conversion() {
+test m101_p7_safe_type_conversion() {
   when get_maybe_something(False, "hello world") is {
     Some(something) -> {
       trace @"hello world"
