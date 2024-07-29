@@ -5,11 +5,13 @@ use aiken/transaction.{
   placeholder,
 }
 use aiken/transaction/value
+use sidan_placeholder/output_reference.{mock_utxo_ref}
 
 /// Learning objective
 /// 1. Get a basic understanding of transaction
 /// 2. Understand that for every single smart contract validator, it has local access to entire current transaction
 /// 3. Learn the Cardano type of utxo: txhash + txindex
+/// 4. Learn about sidan_placeholder: mock_utxo_ref
 fn transaction_placeholder() -> Transaction {
   Transaction {
     inputs: [],
@@ -29,7 +31,7 @@ fn transaction_placeholder() -> Transaction {
   }
 }
 
-test m103_aiken_builtin_placeholder() {
+test m103_l1_aiken_builtin_placeholder() {
   transaction_placeholder() == placeholder()
 }
 
@@ -39,7 +41,7 @@ validator {
   }
 }
 
-test m103_test_always_succeed_minting_policy() {
+test m103_l1_test_always_succeed_minting_policy() {
   let redeemer = Void
   let context = ScriptContext { purpose: Mint(""), transaction: placeholder() }
   always_succeed_minting_policy(redeemer, context)
@@ -55,7 +57,7 @@ validator {
   }
 }
 
-test m103_test_always_succeed_spending_validator() {
+test m103_l1_test_always_succeed_spending_validator() {
   let redeemer = Void
   let datum = Void
 
@@ -64,7 +66,7 @@ test m103_test_always_succeed_spending_validator() {
       purpose: Spend(
         OutputReference {
           transaction_id: TransactionId(
-            #"0000000000000000000000000000000000000000000000000000000000000000",
+            #"580a225baee136641ba78acdc9a9b0537468db40acad46554834687ff5c18dd0",
           ),
           output_index: 0,
         },
@@ -72,4 +74,13 @@ test m103_test_always_succeed_spending_validator() {
       transaction: placeholder(),
     }
   always_succeed_spending_validator(datum, redeemer, context)
+}
+
+test m103_l1_sidan_mock_utxo_ref() {
+  mock_utxo_ref(0, 0) == OutputReference {
+    transaction_id: TransactionId(
+      #"580a225baee136641ba78acdc9a9b0537468db40acad46554834687ff5c18dd0",
+    ),
+    output_index: 0,
+  }
 }
