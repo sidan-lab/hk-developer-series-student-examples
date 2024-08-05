@@ -9,8 +9,8 @@ use sidan_placeholder/output_reference.{mock_utxo_ref}
 
 /// Learning objecting
 /// 1. Parameterizing script
-/// 3. Familiar with property accessing for a type from transaction
-/// 4. Familiar with control flow
+/// 2. Familiar with property accessing for a type from transaction
+/// 3. Familiar with control flow
 validator(utxo: OutputReference) {
   fn always_succeed_minting_policy(_redeemer: Data, context: ScriptContext) {
     let inputs = context.transaction.inputs
