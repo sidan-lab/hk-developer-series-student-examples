@@ -68,6 +68,8 @@ test m103_l1_sidan_mock_output_2() {
   )
 }
 
+// SIDAN tx builder
+
 fn mock_spending_tx_sidan_tx_builder() -> Transaction {
   new_tx_tester()
     |> tx_in(
