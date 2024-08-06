@@ -4,8 +4,8 @@ use sidan_placeholder/key_hex.{mock_pub_key_hex}
 use sidan_placeholder/output_reference.{mock_utxo_ref}
 use sidan_utils/extra_signatories.{key_signed}
 
-type Redeemer {
-  message: ByteArray,
+type Datum {
+  owner: ByteArray,
 }
 
 /// Learning objecting
@@ -15,12 +15,12 @@ type Redeemer {
 /// 4. Learn building required signers with SIDAN tx builder
 validator {
   fn check_signatures_spending_validator(
-    _datum: Data,
-    redeemer: Redeemer,
+    datum: Datum,
+    _redeemer: Data,
     context: ScriptContext,
   ) {
     let Transaction { extra_signatories, .. } = context.transaction
-    key_signed(extra_signatories, redeemer.message)
+    key_signed(extra_signatories, datum.owner)
   }
 }
 
@@ -41,8 +41,8 @@ test m202_l5_test_success() {
       purpose: Spend(mock_utxo_ref(0, 0)),
       transaction: mock_tx(TestCase { is_key_signed: True }),
     }
-  let redeemer = Redeemer { message: mock_pub_key_hex(0) }
-  check_signatures_spending_validator(Void, redeemer, context)
+  let datum = Datum { owner: mock_pub_key_hex(0) }
+  check_signatures_spending_validator(datum, Void, context)
 }
 
 test m202_l5_test_failed_without_signer() {
@@ -51,8 +51,8 @@ test m202_l5_test_failed_without_signer() {
       purpose: Spend(mock_utxo_ref(0, 0)),
       transaction: mock_tx(TestCase { is_key_signed: False }),
     }
-  let redeemer = Redeemer { message: mock_pub_key_hex(0) }
-  !check_signatures_spending_validator(Void, redeemer, context)
+  let datum = Datum { owner: mock_pub_key_hex(0) }
+  !check_signatures_spending_validator(datum, Void, context)
 }
 
 test m202_l5_test_failed_with_incorrect_signer() {
@@ -61,6 +61,6 @@ test m202_l5_test_failed_with_incorrect_signer() {
       purpose: Spend(mock_utxo_ref(0, 0)),
       transaction: mock_tx(TestCase { is_key_signed: True }),
     }
-  let redeemer = Redeemer { message: mock_pub_key_hex(1) }
-  !check_signatures_spending_validator(Void, redeemer, context)
+  let datum = Datum { owner: mock_pub_key_hex(1) }
+  !check_signatures_spending_validator(datum, Void, context)
 }
