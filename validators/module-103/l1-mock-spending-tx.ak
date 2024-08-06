@@ -85,7 +85,7 @@ fn mock_spending_tx_sidan_tx_builder() -> Transaction {
 }
 
 test m103_l1_sidan_tx_builder() {
-  let tx = mock_spending_tx_sidan_tx_builder()
+  let tx = mock_spending_tx()
   let sidan_tx = mock_spending_tx_sidan_tx_builder()
   tx == sidan_tx
 }
@@ -108,7 +108,7 @@ fn mock_spending_tx_sidan_tx() -> Transaction {
 }
 
 test m103_l1_sidan_tx() {
-  let tx = mock_spending_tx_sidan_tx_builder()
+  let tx = mock_spending_tx()
   let sidan_tx = mock_spending_tx_sidan_tx()
   tx == sidan_tx
 }
