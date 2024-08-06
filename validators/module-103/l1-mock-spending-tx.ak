@@ -25,8 +25,8 @@ fn mock_spending_tx() -> Transaction {
           stake_credential: None,
         },
         value: from_asset("", "", 10_000_000),
-        reference_script: None,
         datum: NoDatum,
+        reference_script: None,
       },
     }
   let output =
@@ -36,8 +36,8 @@ fn mock_spending_tx() -> Transaction {
         stake_credential: None,
       },
       value: from_lovelace(9_000_000),
-      reference_script: None,
       datum: NoDatum,
+      reference_script: None,
     }
   let fee = from_lovelace(1_000_000)
   Transaction { ..placeholder(), inputs: [input], outputs: [output], fee: fee }
