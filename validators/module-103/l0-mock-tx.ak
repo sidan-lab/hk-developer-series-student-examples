@@ -5,6 +5,7 @@ use aiken/transaction.{
   placeholder,
 }
 use aiken/transaction/value
+use sidan_placeholder/builder.{complete, new_tx_tester}
 use sidan_placeholder/output_reference.{mock_utxo_ref}
 
 /// Learning objective
@@ -31,8 +32,13 @@ fn transaction_placeholder() -> Transaction {
   }
 }
 
-test m103_l1_aiken_builtin_placeholder() {
+test m103_l0_aiken_builtin_placeholder() {
   transaction_placeholder() == placeholder()
+}
+
+test m103_l0_aiken_sidan_placeholder() {
+  let tx = new_tx_tester() |> complete()
+  placeholder() == tx
 }
 
 validator {
@@ -41,7 +47,7 @@ validator {
   }
 }
 
-test m103_l1_test_always_succeed_minting_policy() {
+test m103_l0_test_always_succeed_minting_policy() {
   let redeemer = Void
   let context = ScriptContext { purpose: Mint(""), transaction: placeholder() }
   always_succeed_minting_policy(redeemer, context)
@@ -57,7 +63,7 @@ validator {
   }
 }
 
-test m103_l1_test_always_succeed_spending_validator() {
+test m103_l0_test_always_succeed_spending_validator() {
   let redeemer = Void
   let datum = Void
 
@@ -76,7 +82,7 @@ test m103_l1_test_always_succeed_spending_validator() {
   always_succeed_spending_validator(datum, redeemer, context)
 }
 
-test m103_l1_sidan_mock_utxo_ref() {
+test m103_l0_sidan_mock_utxo_ref() {
   mock_utxo_ref(0, 0) == OutputReference {
     transaction_id: TransactionId(
       #"580a225baee136641ba78acdc9a9b0537468db40acad46554834687ff5c18dd0",

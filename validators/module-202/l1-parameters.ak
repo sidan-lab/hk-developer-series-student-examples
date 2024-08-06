@@ -21,7 +21,7 @@ validator(utxo: OutputReference) {
   }
 }
 
-test m103_l2_test_one_time_minting_policy() {
+test m202_l1_test_one_time_minting_policy() {
   let redeemer = Void
 
   let input =
