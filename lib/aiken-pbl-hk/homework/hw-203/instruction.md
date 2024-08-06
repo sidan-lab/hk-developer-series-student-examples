@@ -1,3 +1,3 @@
 # Module 203 Homework
 
-1. Find datum hash from own input
+1. Build all scripts for aiken_game_account
