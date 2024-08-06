@@ -5,8 +5,9 @@ use sidan_placeholder/builder.{complete, new_tx_tester, tx_in, tx_out}
 use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
 
 /// Learning objecting
-/// 4. Can distinguish between: the smart contract updates the datum vs the script validate if datum is updated -> building early concept on cardano validator
-/// 5. Learn building required signers with SIDAN tx builder
+/// 1. Familar with accessing transaction information - inputs & outputs
+/// 2. Can interpret the single input validation means in current transaction, there is only script input
+/// 3. Familiar with the control flow pattern matching with number of items in a list
 validator {
   fn check_only_script_input_spending_validator(
     _datum: Data,
