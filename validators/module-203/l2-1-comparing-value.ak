@@ -1,6 +1,6 @@
 use aiken/transaction/value.{add, from_lovelace}
-use sidan_placeholder/key_hex.{mock_policy_id}
-use sidan_utils/value.{value_geq} as sidan_value
+use mocktail/virgin_key_hex.{mock_policy_id}
+use vodka_value.{value_geq}
 
 test m203_l2_1_test_value_geq_1() {
   let value1 = from_lovelace(2_000_000)

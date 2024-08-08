@@ -4,12 +4,12 @@ use aiken/transaction/credential.{Address}
 use aiken/transaction/value.{
   AssetName, PolicyId, Value, add, from_asset, from_lovelace, merge, zero,
 }
-use sidan_placeholder/address.{mock_pub_key_address, mock_script_address}
-use sidan_placeholder/builder.{complete, new_tx_tester, tx_in}
-use sidan_placeholder/key_hex.{mock_policy_id}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
-use sidan_placeholder/outputs.{mock_pub_key_output}
-use sidan_utils/value.{get_all_value_from, value_geq} as sidan_value
+use mocktail.{complete, mocktail_tx, tx_in}
+use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
+use mocktail/virgin_key_hex.{mock_policy_id}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail/virgin_outputs.{mock_pub_key_output}
+use vodka_value.{get_all_value_from, value_geq} as sidan_value
 
 fn inputs_value_from_address(inputs: List<Input>, address: Address) -> Value {
   list.foldr(
@@ -102,7 +102,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     is_minimum_script_token_provided,
   } = test_case
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

@@ -7,14 +7,11 @@ use aiken/transaction.{
 }
 use aiken/transaction/credential.{Address, ScriptCredential}
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_script_address}
-use sidan_placeholder/builder.{
-  complete, new_tx_tester, tx_in, tx_in_inline_datum,
-}
-use sidan_placeholder/key_hex.{mock_script_hash_hex}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
-use sidan_placeholder/outputs.{mock_script_output}
-use sidan_placeholder/transaction.{add_input} as sidan_tx
+use mocktail.{add_input, complete, mocktail_tx, tx_in, tx_in_inline_datum}
+use mocktail/virgin_address.{mock_script_address}
+use mocktail/virgin_key_hex.{mock_script_hash}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail/virgin_outputs.{mock_script_output}
 
 type MockDatum {
   MockDatum
@@ -47,7 +44,7 @@ fn mock_unlocking_tx() -> Transaction {
       output_reference: mock_utxo_ref(0, 0),
       output: Output {
         address: Address {
-          payment_credential: ScriptCredential(mock_script_hash_hex(0)),
+          payment_credential: ScriptCredential(mock_script_hash(0)),
           stake_credential: None,
         },
         value: from_lovelace(10_000_000),
@@ -68,7 +65,7 @@ fn mock_unlocking_tx() -> Transaction {
 // SIDAN tx builder
 
 fn mock_locking_tx_sidan_tx_builder() -> Transaction {
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

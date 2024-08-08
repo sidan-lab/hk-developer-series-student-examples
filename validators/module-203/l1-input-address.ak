@@ -2,11 +2,11 @@ use aiken/list
 use aiken/transaction.{Input, ScriptContext, Spend, Transaction, find_input}
 use aiken/transaction/credential.{Address}
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_pub_key_address, mock_script_address}
-use sidan_placeholder/builder.{complete, new_tx_tester, tx_in}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
-use sidan_placeholder/outputs.{mock_pub_key_output}
-use sidan_utils/inputs.{inputs_at}
+use mocktail.{complete, mocktail_tx, tx_in}
+use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail/virgin_outputs.{mock_pub_key_output}
+use vodka_inputs.{inputs_at}
 
 fn filter_address_for_inputs(
   inputs: List<Input>,
@@ -66,7 +66,7 @@ type TestCase {
 fn mock_tx(test_case: TestCase) -> Transaction {
   let TestCase { is_only_one_script_input } = test_case
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

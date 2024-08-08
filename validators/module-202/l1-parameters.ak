@@ -1,10 +1,10 @@
 use aiken/list
 use aiken/transaction.{Input, Mint, OutputReference, ScriptContext, Transaction}
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_pub_key_address}
-use sidan_placeholder/builder.{complete, new_tx_tester, tx_in}
-use sidan_placeholder/key_hex.{mock_policy_id}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail.{complete, mocktail_tx, tx_in}
+use mocktail/virgin_address.{mock_pub_key_address}
+use mocktail/virgin_key_hex.{mock_policy_id}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 
 /// Learning objecting
 /// 1. Parameterizing script
@@ -24,7 +24,7 @@ test m202_l1_test_one_time_minting_policy() {
   let redeemer = Void
 
   let tx =
-    new_tx_tester()
+    mocktail_tx()
       |> tx_in(
           True,
           mock_tx_hash(0),

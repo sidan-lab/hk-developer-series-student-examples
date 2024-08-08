@@ -1,5 +1,5 @@
 use aiken/transaction.{Mint, ScriptContext, Spend, placeholder}
-use sidan_placeholder/output_reference.{mock_utxo_ref}
+use mocktail/virgin_output_reference.{mock_utxo_ref}
 
 /// Learning Objective:
 /// 1. Basic type signature of minting policy smart contract

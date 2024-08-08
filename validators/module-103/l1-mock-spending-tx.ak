@@ -1,12 +1,13 @@
 use aiken/transaction.{Input, NoDatum, Output, Transaction, placeholder}
 use aiken/transaction/credential.{Address, VerificationKeyCredential}
 use aiken/transaction/value.{from_asset, from_lovelace}
-use sidan_placeholder/address.{mock_pub_key_address}
-use sidan_placeholder/builder.{complete, new_tx_tester, tx_in, tx_out}
-use sidan_placeholder/key_hex.{mock_pub_key_hex}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
-use sidan_placeholder/outputs.{mock_pub_key_output}
-use sidan_placeholder/transaction.{add_input, add_output, set_fee} as sidan_tx
+use mocktail.{
+  add_input, add_output, complete, mocktail_tx, set_fee, tx_in, tx_out,
+}
+use mocktail/virgin_address.{mock_pub_key_address}
+use mocktail/virgin_key_hex.{mock_pub_key_hash}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail/virgin_outputs.{mock_pub_key_output}
 
 /// Learning objective
 /// 1. Learn about the concept of balance transaction: input value = output value + fee
@@ -21,7 +22,7 @@ fn mock_spending_tx() -> Transaction {
       output_reference: mock_utxo_ref(0, 0),
       output: Output {
         address: Address {
-          payment_credential: VerificationKeyCredential(mock_pub_key_hex(0)),
+          payment_credential: VerificationKeyCredential(mock_pub_key_hash(0)),
           stake_credential: None,
         },
         value: from_asset("", "", 10_000_000),
@@ -32,7 +33,7 @@ fn mock_spending_tx() -> Transaction {
   let output =
     Output {
       address: Address {
-        payment_credential: VerificationKeyCredential(mock_pub_key_hex(1)),
+        payment_credential: VerificationKeyCredential(mock_pub_key_hash(1)),
         stake_credential: None,
       },
       value: from_lovelace(9_000_000),
@@ -71,7 +72,7 @@ test m103_l1_sidan_mock_output_2() {
 // SIDAN tx builder
 
 fn mock_spending_tx_sidan_tx_builder() -> Transaction {
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

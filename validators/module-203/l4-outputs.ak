@@ -2,14 +2,13 @@ use aiken/transaction.{
   InlineDatum, ScriptContext, Spend, Transaction, find_input,
 }
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_script_address}
-use sidan_placeholder/builder.{
-  complete, new_tx_tester, tx_in, tx_in_inline_datum, tx_out,
-  tx_out_inline_datum,
+use mocktail.{
+  complete, mocktail_tx, tx_in, tx_in_inline_datum, tx_out, tx_out_inline_datum,
 }
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
-use sidan_utils/inputs.{inputs_at}
-use sidan_utils/outputs.{outputs_at}
+use mocktail/virgin_address.{mock_script_address}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
+use vodka_inputs.{inputs_at}
+use vodka_outputs.{outputs_at}
 
 type Datum {
   Initialize
@@ -95,7 +94,7 @@ fn mock_increment_tx(test_case: IncrementTestCase) -> Transaction {
       ActiveTransition { count: output_count - 1 }
     }
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),
@@ -232,7 +231,7 @@ fn mock_close_state_tx(test_case: CloseStateTestCase) -> Transaction {
       10
     }
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

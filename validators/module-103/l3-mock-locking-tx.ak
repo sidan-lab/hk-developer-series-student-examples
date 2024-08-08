@@ -1,13 +1,10 @@
 use aiken/transaction.{InlineDatum, Output, Transaction, placeholder}
 use aiken/transaction/credential.{Address, ScriptCredential}
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_script_address}
-use sidan_placeholder/builder.{
-  complete, new_tx_tester, tx_out, tx_out_inline_datum,
-}
-use sidan_placeholder/key_hex.{mock_script_hash_hex}
-use sidan_placeholder/outputs.{mock_script_output}
-use sidan_placeholder/transaction.{add_output} as sidan_tx
+use mocktail.{add_output, complete, mocktail_tx, tx_out, tx_out_inline_datum}
+use mocktail/virgin_address.{mock_script_address}
+use mocktail/virgin_key_hex.{mock_script_hash}
+use mocktail/virgin_outputs.{mock_script_output}
 
 type MockDatum {
   MockDatum
@@ -17,13 +14,13 @@ type MockDatum {
 /// 1. Learn about the concept of balance transaction: input value = output value + fee
 /// 2. Learn about locking transaction needs a datum, and the importance of that
 /// 3. Learn about inline datum vs datum hash in conceptual level
-/// 4. Learn about sidan_placeholder: mock_script_hash_hex, mock_script_address, mock_script_output
+/// 4. Learn about sidan_placeholder: mock_script_hash, mock_script_address, mock_script_output
 /// 5. Learn about the TxTester way of building script output for Transaction
 fn mock_locking_tx() -> Transaction {
   let output =
     Output {
       address: Address {
-        payment_credential: ScriptCredential(mock_script_hash_hex(0)),
+        payment_credential: ScriptCredential(mock_script_hash(0)),
         stake_credential: None,
       },
       value: from_lovelace(10_000_000),
@@ -42,7 +39,7 @@ test m103_l3_sidan_mock_address() {
 // SIDAN tx builder
 
 fn mock_locking_tx_sidan_tx_builder() -> Transaction {
-  new_tx_tester()
+  mocktail_tx()
     |> tx_out(True, mock_script_address(0, None), from_lovelace(10_000_000))
     |> tx_out_inline_datum(True, MockDatum)
     |> complete()

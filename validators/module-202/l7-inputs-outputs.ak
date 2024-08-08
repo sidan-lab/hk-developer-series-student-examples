@@ -1,8 +1,8 @@
 use aiken/transaction.{ScriptContext, Spend, Transaction}
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_pub_key_address, mock_script_address}
-use sidan_placeholder/builder.{complete, new_tx_tester, tx_in, tx_out}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail.{complete, mocktail_tx, tx_in, tx_out}
+use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 
 /// Learning objecting
 /// 1. Familar with accessing transaction information - inputs & outputs
@@ -37,7 +37,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     is_single_output,
   } = test_case
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         is_input_present,
         mock_tx_hash(0),

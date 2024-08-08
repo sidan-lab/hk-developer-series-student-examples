@@ -2,11 +2,9 @@ use aiken/transaction.{
   InlineDatum, Input, ScriptContext, Spend, Transaction, find_input,
 }
 use aiken/transaction/value.{from_lovelace}
-use sidan_placeholder/address.{mock_pub_key_address}
-use sidan_placeholder/builder.{
-  complete, new_tx_tester, tx_in, tx_in_inline_datum,
-}
-use sidan_placeholder/output_reference.{mock_tx_hash, mock_utxo_ref}
+use mocktail.{complete, mocktail_tx, tx_in, tx_in_inline_datum}
+use mocktail/virgin_address.{mock_pub_key_address}
+use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 
 type Datum {
   Datum1 { secret: ByteArray }
@@ -62,7 +60,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
       Datum2
     }
 
-  new_tx_tester()
+  mocktail_tx()
     |> tx_in(
         True,
         mock_tx_hash(0),

@@ -1,9 +1,7 @@
 use aiken/transaction.{ScriptContext, Spend, Transaction}
-use sidan_placeholder/builder.{
-  complete, invalid_before, invalid_hereafter, new_tx_tester,
-}
-use sidan_placeholder/output_reference.{mock_utxo_ref}
-use sidan_utils/validity_range.{valid_after, valid_before}
+use mocktail.{complete, invalid_before, invalid_hereafter, mocktail_tx}
+use mocktail/virgin_output_reference.{mock_utxo_ref}
+use vodka_validity_range.{valid_after, valid_before}
 
 type Datum {
   must_be_after: Int,
@@ -38,7 +36,7 @@ type TestCase {
 fn mock_tx(test_case: TestCase) -> Transaction {
   let TestCase { is_tx_before_valid_upper_bound, is_tx_after_valid_lower_bound } =
     test_case
-  new_tx_tester()
+  mocktail_tx()
     |> invalid_hereafter(is_tx_before_valid_upper_bound, 199)
     |> invalid_before(is_tx_after_valid_lower_bound, 101)
     |> complete()

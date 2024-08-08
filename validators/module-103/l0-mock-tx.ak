@@ -5,8 +5,8 @@ use aiken/transaction.{
   placeholder,
 }
 use aiken/transaction/value
-use sidan_placeholder/builder.{complete, new_tx_tester}
-use sidan_placeholder/output_reference.{mock_utxo_ref}
+use mocktail.{complete, mocktail_tx}
+use mocktail/virgin_output_reference.{mock_utxo_ref}
 
 /// Learning objective
 /// 1. Get a basic understanding of transaction
@@ -37,7 +37,7 @@ test m103_l0_aiken_builtin_placeholder() {
 }
 
 test m103_l0_aiken_sidan_placeholder() {
-  let tx = new_tx_tester() |> complete()
+  let tx = mocktail_tx() |> complete()
   placeholder() == tx
 }
 
