@@ -9,9 +9,9 @@ fn mock_token_name() {
 
 /// Learning objective
 /// 1. Understand that for testing purpose, we dont have to do balance tx
-/// 2. Learn about sidan_placeholder: mock_policy_id
+/// 2. Learn about mocktail placeholder: mock_policy_id
 /// 3. Understand what's the difference between different key hex utils, e.g. mock_policy_id vs mock_pub_key_hash
-/// 4. Learn about the TxTester way of building mint for Transaction
+/// 4. Learn about the mocktail way of building mint for Transaction
 fn mock_minting_tx() -> Transaction {
   Transaction {
     ..placeholder(),
@@ -29,23 +29,23 @@ test m103_l2_mock_minting_tx() {
   )
 }
 
-// SIDAN tx builder
+// Mocktail tx builder
 
-fn mock_minting_tx_sidan_tx_builder() -> Transaction {
+fn mock_minting_tx_mocktail_tx_builder() -> Transaction {
   mocktail_tx()
     |> mint(True, 1, mock_policy_id(0), mock_token_name())
     |> complete()
 }
 
-test m103_l2_sidan_tx_builder() {
-  mock_minting_tx() == mock_minting_tx_sidan_tx_builder()
+test m103_l2_mocktail_tx_builder() {
+  mock_minting_tx() == mock_minting_tx_mocktail_tx_builder()
 }
 
-fn mock_minting_tx_sidan_tx() -> Transaction {
+fn mock_minting_tx_mocktail_tx() -> Transaction {
   placeholder()
     |> add_mint(True, from_asset(mock_policy_id(0), mock_token_name(), 1))
 }
 
-test m103_l2_sidan_tx() {
-  mock_minting_tx() == mock_minting_tx_sidan_tx()
+test m103_l2_mocktail_tx() {
+  mock_minting_tx() == mock_minting_tx_mocktail_tx()
 }

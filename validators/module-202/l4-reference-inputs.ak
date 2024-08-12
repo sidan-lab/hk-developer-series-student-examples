@@ -7,8 +7,8 @@ use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 /// Learning objecting
 /// 1. Accessing transaction information
 /// 2. Distinguish control flow with when {} is {} and expect()
-/// 3. Learn building reference input with SIDAN tx builder
-/// 4. Learn about comprehensive test case with SIDAN tx builder pattern
+/// 3. Learn building reference input with Mocktail tx builder
+/// 4. Learn about comprehensive test case with Mocktail tx builder pattern
 validator {
   fn check_reference_inputs_spending_validator(
     _datum: Data,

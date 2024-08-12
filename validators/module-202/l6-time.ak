@@ -10,9 +10,9 @@ type Datum {
 
 /// Learning objecting
 /// 1. Familiar with data type short hand form (only one constructor)
-/// 2. Learn about SIDAN utils in checking time range
+/// 2. Learn about Vodka utils in checking time range
 /// 3. Can distinguish between: when does the tx happened vs in which timeframe must the tx happened -> building early concept on cardano validator
-/// 4. Learn building valid tx time range with SIDAN tx builder
+/// 4. Learn building valid tx time range with Mocktail tx builder
 validator {
   fn check_time_spending_validator(
     datum: Datum,

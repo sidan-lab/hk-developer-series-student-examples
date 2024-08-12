@@ -14,8 +14,8 @@ use mocktail/virgin_outputs.{mock_pub_key_output}
 /// 2. Familiar with the structure of an input
 /// 3. Familiar with the structure of an output
 /// 4. Familiar with how to construct Cardano native value, lovelace and token
-/// 5. Learn about sidan_placeholder: mock_pub_key_address, mock_pub_key_output
-/// 6. Learn about the TxTester way of building input and output for Transaction
+/// 5. Learn about mocktail placeholders: mock_pub_key_address, mock_pub_key_output
+/// 6. Learn about the mocktail way of building input and output for Transaction
 fn mock_spending_tx() -> Transaction {
   let input =
     Input {
@@ -44,14 +44,14 @@ fn mock_spending_tx() -> Transaction {
   Transaction { ..placeholder(), inputs: [input], outputs: [output], fee: fee }
 }
 
-test m103_l1_sidan_mock_address() {
+test m103_l1_mocktail_mock_address() {
   let tx = mock_spending_tx()
   expect [input] = tx.inputs
   let address = input.output.address
   address == mock_pub_key_address(0, None)
 }
 
-test m103_l1_sidan_mock_output() {
+test m103_l1_mocktail_mock_output() {
   let tx = mock_spending_tx()
   expect [input] = tx.inputs
   input.output == mock_pub_key_output(
@@ -60,7 +60,7 @@ test m103_l1_sidan_mock_output() {
   )
 }
 
-test m103_l1_sidan_mock_output_2() {
+test m103_l1_mocktail_mock_output_2() {
   let tx = mock_spending_tx()
   expect [output] = tx.outputs
   output == mock_pub_key_output(
@@ -69,9 +69,9 @@ test m103_l1_sidan_mock_output_2() {
   )
 }
 
-// SIDAN tx builder
+// Mocktail tx builder
 
-fn mock_spending_tx_sidan_tx_builder() -> Transaction {
+fn mock_spending_tx_mocktail_tx_builder() -> Transaction {
   mocktail_tx()
     |> tx_in(
         True,
@@ -85,13 +85,13 @@ fn mock_spending_tx_sidan_tx_builder() -> Transaction {
     |> set_fee(True, 1_000_000)
 }
 
-test m103_l1_sidan_tx_builder() {
+test m103_l1_mocktail_tx_builder() {
   let tx = mock_spending_tx()
-  let sidan_tx = mock_spending_tx_sidan_tx_builder()
-  tx == sidan_tx
+  let mocktail_tx = mock_spending_tx_mocktail_tx_builder()
+  tx == mocktail_tx
 }
 
-fn mock_spending_tx_sidan_tx() -> Transaction {
+fn mock_spending_tx_mocktail_tx() -> Transaction {
   let input =
     Input {
       output_reference: mock_utxo_ref(0, 0),
@@ -108,8 +108,8 @@ fn mock_spending_tx_sidan_tx() -> Transaction {
     |> set_fee(True, 1_000_000)
 }
 
-test m103_l1_sidan_tx() {
+test m103_l1_mocktail_tx() {
   let tx = mock_spending_tx()
-  let sidan_tx = mock_spending_tx_sidan_tx()
-  tx == sidan_tx
+  let mocktail_tx = mock_spending_tx_mocktail_tx()
+  tx == mocktail_tx
 }

@@ -15,7 +15,7 @@ fn filter_address_for_inputs(
   list.filter(inputs, fn(input) { input.output.address == address })
 }
 
-test m203_l1_test_sidan_util_inputs_at() {
+test m203_l1_test_vodka_util_inputs_at() {
   let address = mock_pub_key_address(0, None)
   let inputs =
     [
@@ -33,13 +33,13 @@ test m203_l1_test_sidan_util_inputs_at() {
     ]
   expect [target_input, _other_input] = inputs
   expect [only_filterd_input] = filter_address_for_inputs(inputs, address)
-  expect [sidan_filtered_input] = inputs_at(inputs, address)
-  only_filterd_input == target_input && sidan_filtered_input == target_input
+  expect [vodka_filtered_input] = inputs_at(inputs, address)
+  only_filterd_input == target_input && vodka_filtered_input == target_input
 }
 
 /// Learning objecting
 /// 1. Learn how to find the input current validating from context.transaction
-/// 2. Learn how to filter address for the inputs, with sidan util inputs_at
+/// 2. Learn how to filter address for the inputs, with Vodka util inputs_at
 /// 3. Understand that in Cardano, seldomly there is only 1 input, i.e. script input + user input for covering some tx fee etc
 validator {
   fn check_only_script_input_spending_validator(

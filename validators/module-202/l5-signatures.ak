@@ -10,9 +10,9 @@ type Datum {
 
 /// Learning objecting
 /// 1. Familiar with data type short hand form (only one constructor)
-/// 2. Learn about SIDAN utils in checking signature
+/// 2. Learn about Vodka utils in checking signature
 /// 3. Can distinguish between: who signed the transaction vs who is required to signed the transaction -> building early concept on cardano validator
-/// 4. Learn building required signers with SIDAN tx builder
+/// 4. Learn building required signers with Mocktail tx builder
 validator {
   fn check_signatures_spending_validator(
     datum: Datum,

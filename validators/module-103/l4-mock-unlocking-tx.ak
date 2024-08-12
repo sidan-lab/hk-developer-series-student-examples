@@ -37,7 +37,7 @@ fn get_mock_redeemers() -> Pairs<ScriptPurpose, Redeemer> {
 /// 1. Learn about the concept of balance transaction: input value = output value + fee
 /// 2. Learn about locking transaction needs a datum, and the importance of that
 /// 3. Learn about inline datum vs datum hash in conceptual level
-/// 4. Learn about the TxTester way of building script output for Transaction
+/// 4. Learn about the mocktail way of building script output for Transaction
 fn mock_unlocking_tx() -> Transaction {
   let input =
     Input {
@@ -62,9 +62,9 @@ fn mock_unlocking_tx() -> Transaction {
   }
 }
 
-// SIDAN tx builder
+// Mocktail tx builder
 
-fn mock_locking_tx_sidan_tx_builder() -> Transaction {
+fn mock_locking_tx_mocktail_tx_builder() -> Transaction {
   mocktail_tx()
     |> tx_in(
         True,
@@ -77,13 +77,13 @@ fn mock_locking_tx_sidan_tx_builder() -> Transaction {
     |> complete()
 }
 
-test m103_l4_sidan_tx_builder() {
+test m103_l4_mocktail_tx_builder() {
   let tx_inputs = mock_unlocking_tx().inputs
-  let sidan_tx_inputs = mock_locking_tx_sidan_tx_builder().inputs
-  tx_inputs == sidan_tx_inputs
+  let mocktail_tx_inputs = mock_locking_tx_mocktail_tx_builder().inputs
+  tx_inputs == mocktail_tx_inputs
 }
 
-fn mock_locking_tx_sidan_tx() -> Transaction {
+fn mock_locking_tx_mocktail_tx() -> Transaction {
   let input =
     Input {
       output_reference: mock_utxo_ref(0, 0),
@@ -97,8 +97,8 @@ fn mock_locking_tx_sidan_tx() -> Transaction {
     |> add_input(True, input)
 }
 
-test m103_l4_sidan_tx() {
+test m103_l4_mocktail_tx() {
   let tx_inputs = mock_unlocking_tx().inputs
-  let sidan_tx_inputs = mock_locking_tx_sidan_tx().inputs
-  tx_inputs == sidan_tx_inputs
+  let mocktail_tx_inputs = mock_locking_tx_mocktail_tx().inputs
+  tx_inputs == mocktail_tx_inputs
 }

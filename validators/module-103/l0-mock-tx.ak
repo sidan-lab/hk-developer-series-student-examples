@@ -12,7 +12,7 @@ use mocktail/virgin_output_reference.{mock_utxo_ref}
 /// 1. Get a basic understanding of transaction
 /// 2. Understand that for every single smart contract validator, it has local access to entire current transaction
 /// 3. Learn the Cardano type of utxo: txhash + txindex
-/// 4. Learn about sidan_placeholder: mock_utxo_ref
+/// 4. Learn about vodka mocktail util function: mock_utxo_ref
 fn transaction_placeholder() -> Transaction {
   Transaction {
     inputs: [],
@@ -36,7 +36,7 @@ test m103_l0_aiken_builtin_placeholder() {
   transaction_placeholder() == placeholder()
 }
 
-test m103_l0_aiken_sidan_placeholder() {
+test m103_l0_aiken_mocktail_tx() {
   let tx = mocktail_tx() |> complete()
   placeholder() == tx
 }
@@ -82,7 +82,7 @@ test m103_l0_test_always_succeed_spending_validator() {
   always_succeed_spending_validator(datum, redeemer, context)
 }
 
-test m103_l0_sidan_mock_utxo_ref() {
+test m103_l0_mocktail_mock_utxo_ref() {
   mock_utxo_ref(0, 0) == OutputReference {
     transaction_id: TransactionId(
       #"580a225baee136641ba78acdc9a9b0537468db40acad46554834687ff5c18dd0",

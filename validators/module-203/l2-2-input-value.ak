@@ -9,7 +9,7 @@ use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
 use mocktail/virgin_key_hex.{mock_policy_id}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 use mocktail/virgin_outputs.{mock_pub_key_output}
-use vodka_value.{get_all_value_from, value_geq} as sidan_value
+use vodka_value.{get_all_value_from, value_geq}
 
 fn inputs_value_from_address(inputs: List<Input>, address: Address) -> Value {
   list.foldr(
@@ -25,7 +25,7 @@ fn inputs_value_from_address(inputs: List<Input>, address: Address) -> Value {
   )
 }
 
-test m203_l2_test_sidan_util_inputs_at() {
+test m203_l2_test_vodka_util_inputs_at() {
   let address = mock_pub_key_address(0, None)
   let inputs =
     [
@@ -54,8 +54,8 @@ test m203_l2_test_sidan_util_inputs_at() {
     ]
   let correct_value = from_lovelace(5_000_000) |> add(mock_policy_id(0), "", 1)
   let input_value_sum = inputs_value_from_address(inputs, address)
-  let sidan_input_value_sum = get_all_value_from(inputs, address)
-  input_value_sum == input_value_sum && sidan_input_value_sum == correct_value
+  let vodka_input_value_sum = get_all_value_from(inputs, address)
+  input_value_sum == input_value_sum && vodka_input_value_sum == correct_value
 }
 
 type Datum {
@@ -64,8 +64,8 @@ type Datum {
 }
 
 /// Learning objecting
-/// 1. Learn how to accumulate input value from an address with sidan util get_all_value_from
-/// 2. Learn how to compare value with sidan util value_geq
+/// 1. Learn how to accumulate input value from an address with Vodka util get_all_value_from
+/// 2. Learn how to compare value with Vodka util value_geq
 /// 3. Understand that in Cardano, seldomly there is only 1 input, i.e. script input + user input for covering some tx fee etc
 validator(token_policy_id: PolicyId, token_name: AssetName) {
   fn check_script_input_value_spending_validator(

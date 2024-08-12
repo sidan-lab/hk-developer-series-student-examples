@@ -6,6 +6,7 @@ use mocktail/virgin_output_reference.{mock_utxo_ref}
 /// 2. Basic type signature of spending validator smart contract
 /// 3. Basic idea of context
 /// 4. Running test case with smart contracts (validator)
+/// 5. Skip the details on placeholder() and mock_utxo_ref(), to be covered in 103
 validator {
   fn always_succeed_minting_policy(_redeemer: Data, context: ScriptContext) {
     expect Mint(_) = context.purpose
