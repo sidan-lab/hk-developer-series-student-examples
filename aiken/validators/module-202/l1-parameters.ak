@@ -1,28 +1,29 @@
-use aiken/list
-use aiken/transaction.{Input, Mint, OutputReference, ScriptContext, Transaction}
-use aiken/transaction/value.{from_lovelace}
+use aiken/collection/list
+use cardano/assets.{PolicyId, from_lovelace}
+use cardano/transaction.{Input, OutputReference, Transaction}
 use mocktail.{complete, mocktail_tx, tx_in}
 use mocktail/virgin_address.{mock_pub_key_address}
-use mocktail/virgin_key_hex.{mock_policy_id}
+use mocktail/virgin_key_hash.{mock_policy_id}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 
 /// Learning objecting
 /// 1. Parameterizing script
 /// 2. Familiar with property accessing for a type from transaction
 /// 3. Familiar with control flow
-validator(utxo: OutputReference) {
-  fn always_succeed_minting_policy(_redeemer: Data, context: ScriptContext) {
-    let inputs = context.transaction.inputs
-    when list.find(inputs, fn(input) { input.output_reference == utxo }) is {
+validator always_succeed(utxo: OutputReference) {
+  mint(_redeemer: Data, _policy_id: PolicyId, tx: Transaction) {
+    when list.find(tx.inputs, fn(input) { input.output_reference == utxo }) is {
       Some(_) -> True
       _ -> False
     }
   }
+
+  else(_) {
+    fail
+  }
 }
 
 test m202_l1_test_one_time_minting_policy() {
-  let redeemer = Void
-
   let tx =
     mocktail_tx()
       |> tx_in(
@@ -34,8 +35,5 @@ test m202_l1_test_one_time_minting_policy() {
         )
       |> complete()
 
-  let context =
-    ScriptContext { purpose: Mint(mock_policy_id(0)), transaction: tx }
-
-  always_succeed_minting_policy(mock_utxo_ref(0, 0), redeemer, context)
+  always_succeed.mint(mock_utxo_ref(0, 0), Void, mock_policy_id(0), tx)
 }

@@ -1,5 +1,5 @@
-use aiken/transaction/value.{add, from_lovelace}
-use mocktail/virgin_key_hex.{mock_policy_id}
+use cardano/assets.{add, from_lovelace}
+use mocktail/virgin_key_hash.{mock_policy_id}
 use vodka_value.{value_geq}
 
 test m203_l2_1_test_value_geq_1() {

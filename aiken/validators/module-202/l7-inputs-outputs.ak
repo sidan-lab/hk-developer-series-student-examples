@@ -1,5 +1,5 @@
-use aiken/transaction.{ScriptContext, Spend, Transaction}
-use aiken/transaction/value.{from_lovelace}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{OutputReference, Transaction}
 use mocktail.{complete, mocktail_tx, tx_in, tx_out}
 use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
@@ -8,17 +8,22 @@ use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 /// 1. Familar with accessing transaction information - inputs & outputs
 /// 2. Can interpret the single input validation means in current transaction, there is only script input
 /// 3. Familiar with the control flow pattern matching with number of items in a list
-validator {
-  fn check_only_script_input_spending_validator(
-    _datum: Data,
+validator check_only_script_input {
+  spend(
+    _datum: Option<Data>,
     _redeemer: Data,
-    context: ScriptContext,
+    _input: OutputReference,
+    tx: Transaction,
   ) {
-    let Transaction { inputs, outputs, .. } = context.transaction
+    let Transaction { inputs, outputs, .. } = tx
     when (inputs, outputs) is {
       ([_], [_]) -> True
       _ -> False
     }
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -78,86 +83,71 @@ fn mock_tx(test_case: TestCase) -> Transaction {
 }
 
 test m202_l7_test_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_input_present: True,
-          is_single_input: True,
-          is_output_present: True,
-          is_single_output: True,
-        },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase {
+        is_input_present: True,
+        is_single_input: True,
+        is_output_present: True,
+        is_single_output: True,
+      },
+    )
 
-  check_only_script_input_spending_validator(Void, Void, context)
+  check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l7_test_fail_with_no_input() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_input_present: False,
-          is_single_input: True,
-          is_output_present: True,
-          is_single_output: True,
-        },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase {
+        is_input_present: False,
+        is_single_input: True,
+        is_output_present: True,
+        is_single_output: True,
+      },
+    )
 
-  !check_only_script_input_spending_validator(Void, Void, context)
+  !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l7_test_fail_with_multiple_input() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_input_present: True,
-          is_single_input: False,
-          is_output_present: True,
-          is_single_output: True,
-        },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase {
+        is_input_present: True,
+        is_single_input: False,
+        is_output_present: True,
+        is_single_output: True,
+      },
+    )
 
-  !check_only_script_input_spending_validator(Void, Void, context)
+  !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l7_test_fail_with_no_output() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_input_present: True,
-          is_single_input: True,
-          is_output_present: False,
-          is_single_output: True,
-        },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase {
+        is_input_present: True,
+        is_single_input: True,
+        is_output_present: False,
+        is_single_output: True,
+      },
+    )
 
-  !check_only_script_input_spending_validator(Void, Void, context)
+  !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l7_test_fail_with_multiple_output() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_input_present: True,
-          is_single_input: True,
-          is_output_present: True,
-          is_single_output: False,
-        },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase {
+        is_input_present: True,
+        is_single_input: True,
+        is_output_present: True,
+        is_single_output: False,
+      },
+    )
 
-  !check_only_script_input_spending_validator(Void, Void, context)
+  !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }

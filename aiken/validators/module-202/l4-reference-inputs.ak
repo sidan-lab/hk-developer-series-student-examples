@@ -1,5 +1,5 @@
-use aiken/transaction.{ScriptContext, Spend, Transaction}
-use aiken/transaction/value.{from_lovelace}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{OutputReference, Transaction}
 use mocktail.{complete, mocktail_tx, ref_tx_in}
 use mocktail/virgin_address.{mock_pub_key_address}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
@@ -9,17 +9,21 @@ use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 /// 2. Distinguish control flow with when {} is {} and expect()
 /// 3. Learn building reference input with Mocktail tx builder
 /// 4. Learn about comprehensive test case with Mocktail tx builder pattern
-validator {
-  fn check_reference_inputs_spending_validator(
-    _datum: Data,
+validator check_reference_inputs {
+  spend(
+    _datum_opt: Option<Data>,
     _redeemer: Data,
-    context: ScriptContext,
+    _input: OutputReference,
+    tx: Transaction,
   ) {
-    let Transaction { reference_inputs, .. } = context.transaction
-    when reference_inputs is {
+    when tx.reference_inputs is {
       [_] -> True
       _ -> False
     }
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -56,37 +60,28 @@ fn mock_tx(test_case: TestCase) -> Transaction {
 }
 
 test m202_l4_test_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_ref_input_present: True, is_multiple_ref_inputs: False },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase { is_ref_input_present: True, is_multiple_ref_inputs: False },
+    )
 
-  check_reference_inputs_spending_validator(Void, Void, context)
+  check_reference_inputs.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l4_test_fail_with_no_ref_input() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_ref_input_present: False, is_multiple_ref_inputs: False },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase { is_ref_input_present: False, is_multiple_ref_inputs: False },
+    )
 
-  !check_reference_inputs_spending_validator(Void, Void, context)
+  !check_reference_inputs.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l4_test_fail_with_multiple_ref_input() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_ref_input_present: False, is_multiple_ref_inputs: True },
-      ),
-    }
+  let tx =
+    mock_tx(
+      TestCase { is_ref_input_present: False, is_multiple_ref_inputs: True },
+    )
 
-  !check_reference_inputs_spending_validator(Void, Void, context)
+  !check_reference_inputs.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }

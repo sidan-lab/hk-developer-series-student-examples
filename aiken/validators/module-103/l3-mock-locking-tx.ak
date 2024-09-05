@@ -1,9 +1,9 @@
-use aiken/transaction.{InlineDatum, Output, Transaction, placeholder}
-use aiken/transaction/credential.{Address, ScriptCredential}
-use aiken/transaction/value.{from_lovelace}
+use cardano/address.{Address, Script}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{InlineDatum, Output, Transaction, placeholder}
 use mocktail.{add_output, complete, mocktail_tx, tx_out, tx_out_inline_datum}
 use mocktail/virgin_address.{mock_script_address}
-use mocktail/virgin_key_hex.{mock_script_hash}
+use mocktail/virgin_key_hash.{mock_script_hash}
 use mocktail/virgin_outputs.{mock_script_output}
 
 type MockDatum {
@@ -20,14 +20,14 @@ fn mock_locking_tx() -> Transaction {
   let output =
     Output {
       address: Address {
-        payment_credential: ScriptCredential(mock_script_hash(0)),
+        payment_credential: Script(mock_script_hash(0)),
         stake_credential: None,
       },
       value: from_lovelace(10_000_000),
       datum: InlineDatum(MockDatum),
       reference_script: None,
     }
-  Transaction { ..placeholder(), outputs: [output] }
+  Transaction { ..placeholder, outputs: [output] }
 }
 
 test m103_l3_mocktail_mock_address() {
@@ -58,7 +58,7 @@ fn mock_locking_tx_mocktail_tx() -> Transaction {
       from_lovelace(10_000_000),
       InlineDatum(MockDatum),
     )
-  placeholder()
+  placeholder
     |> add_output(True, output)
 }
 

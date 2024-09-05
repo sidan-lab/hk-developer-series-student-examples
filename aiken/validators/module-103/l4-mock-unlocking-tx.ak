@@ -1,15 +1,15 @@
 use aiken/cbor
-use aiken/dict.{Dict}
-use aiken/hash.{Blake2b_256, Hash}
-use aiken/transaction.{
+use aiken/collection/dict.{Dict}
+use aiken/crypto.{Blake2b_256, Hash}
+use cardano/address.{Address, Script}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{
   InlineDatum, Input, Output, Redeemer, ScriptPurpose, Spend, Transaction,
   placeholder,
 }
-use aiken/transaction/credential.{Address, ScriptCredential}
-use aiken/transaction/value.{from_lovelace}
 use mocktail.{add_input, complete, mocktail_tx, tx_in, tx_in_inline_datum}
 use mocktail/virgin_address.{mock_script_address}
-use mocktail/virgin_key_hex.{mock_script_hash}
+use mocktail/virgin_key_hash.{mock_script_hash}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 use mocktail/virgin_outputs.{mock_script_output}
 
@@ -44,7 +44,7 @@ fn mock_unlocking_tx() -> Transaction {
       output_reference: mock_utxo_ref(0, 0),
       output: Output {
         address: Address {
-          payment_credential: ScriptCredential(mock_script_hash(0)),
+          payment_credential: Script(mock_script_hash(0)),
           stake_credential: None,
         },
         value: from_lovelace(10_000_000),
@@ -55,7 +55,7 @@ fn mock_unlocking_tx() -> Transaction {
 
   // In unit test, we seldom use this field
   Transaction {
-    ..placeholder(),
+    ..placeholder,
     inputs: [input],
     redeemers: get_mock_redeemers(),
     datums: get_mock_datums(),
@@ -93,7 +93,7 @@ fn mock_locking_tx_mocktail_tx() -> Transaction {
         InlineDatum(MockDatum),
       ),
     }
-  placeholder()
+  placeholder
     |> add_input(True, input)
 }
 

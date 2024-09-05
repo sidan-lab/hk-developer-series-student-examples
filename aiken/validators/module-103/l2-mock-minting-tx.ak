@@ -1,7 +1,7 @@
-use aiken/transaction.{Transaction, placeholder}
-use aiken/transaction/value.{from_asset, from_minted_value, to_minted_value}
+use cardano/assets.{from_asset}
+use cardano/transaction.{Transaction, placeholder}
 use mocktail.{add_mint, complete, mint, mocktail_tx}
-use mocktail/virgin_key_hex.{mock_policy_id}
+use mocktail/virgin_key_hash.{mock_policy_id}
 
 fn mock_token_name() {
   "test token name"
@@ -14,19 +14,14 @@ fn mock_token_name() {
 /// 4. Learn about the mocktail way of building mint for Transaction
 fn mock_minting_tx() -> Transaction {
   Transaction {
-    ..placeholder(),
-    mint: from_asset(mock_policy_id(0), mock_token_name(), 1)
-      |> to_minted_value(),
+    ..placeholder,
+    mint: from_asset(mock_policy_id(0), mock_token_name(), 1),
   }
 }
 
 test m103_l2_mock_minting_tx() {
   let tx = mock_minting_tx()
-  from_minted_value(tx.mint) == from_asset(
-    mock_policy_id(0),
-    mock_token_name(),
-    1,
-  )
+  tx.mint == from_asset(mock_policy_id(0), mock_token_name(), 1)
 }
 
 // Mocktail tx builder
@@ -42,7 +37,7 @@ test m103_l2_mocktail_tx_builder() {
 }
 
 fn mock_minting_tx_mocktail_tx() -> Transaction {
-  placeholder()
+  placeholder
     |> add_mint(True, from_asset(mock_policy_id(0), mock_token_name(), 1))
 }
 

@@ -1,9 +1,9 @@
-use aiken/transaction.{ScriptContext, Spend, Transaction}
+use cardano/transaction.{OutputReference, Transaction}
 use mocktail.{complete, invalid_before, invalid_hereafter, mocktail_tx}
 use mocktail/virgin_output_reference.{mock_utxo_ref}
 use vodka_validity_range.{valid_after, valid_before}
 
-type Datum {
+pub type Datum {
   must_be_after: Int,
   must_be_before: Int,
 }
@@ -13,18 +13,23 @@ type Datum {
 /// 2. Learn about Vodka utils in checking time range
 /// 3. Can distinguish between: when does the tx happened vs in which timeframe must the tx happened -> building early concept on cardano validator
 /// 4. Learn building valid tx time range with Mocktail tx builder
-validator {
-  fn check_time_spending_validator(
-    datum: Datum,
+validator check_time {
+  spend(
+    datum_opt: Option<Datum>,
     _redeemer: Data,
-    context: ScriptContext,
+    _input: OutputReference,
+    tx: Transaction,
   ) {
-    let Transaction { validity_range, .. } = context.transaction
+    expect Some(datum) = datum_opt
     let is_upper_bound_correct =
-      valid_before(validity_range, datum.must_be_before)
+      valid_before(tx.validity_range, datum.must_be_before)
     let is_lower_bound_correct =
-      valid_after(validity_range, datum.must_be_after)
+      valid_after(tx.validity_range, datum.must_be_after)
     is_upper_bound_correct? && is_lower_bound_correct?
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -43,46 +48,37 @@ fn mock_tx(test_case: TestCase) -> Transaction {
 }
 
 test m202_l6_test_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_tx_before_valid_upper_bound: True,
-          is_tx_after_valid_lower_bound: True,
-        },
-      ),
-    }
-  let datum = Datum { must_be_after: 100, must_be_before: 200 }
-  check_time_spending_validator(datum, Void, context)
+  let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
+  let tx =
+    mock_tx(
+      TestCase {
+        is_tx_before_valid_upper_bound: True,
+        is_tx_after_valid_lower_bound: True,
+      },
+    )
+  check_time.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l6_test_failed_with_invalid_before() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_tx_before_valid_upper_bound: False,
-          is_tx_after_valid_lower_bound: True,
-        },
-      ),
-    }
-  let datum = Datum { must_be_after: 100, must_be_before: 200 }
-  !check_time_spending_validator(datum, Void, context)
+  let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
+  let tx =
+    mock_tx(
+      TestCase {
+        is_tx_before_valid_upper_bound: False,
+        is_tx_after_valid_lower_bound: True,
+      },
+    )
+  !check_time.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m202_l6_test_failed_with_invalid_hereafter() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase {
-          is_tx_before_valid_upper_bound: True,
-          is_tx_after_valid_lower_bound: False,
-        },
-      ),
-    }
-  let datum = Datum { must_be_after: 100, must_be_before: 200 }
-  !check_time_spending_validator(datum, Void, context)
+  let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
+  let tx =
+    mock_tx(
+      TestCase {
+        is_tx_before_valid_upper_bound: True,
+        is_tx_after_valid_lower_bound: False,
+      },
+    )
+  !check_time.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }

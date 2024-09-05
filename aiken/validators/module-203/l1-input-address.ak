@@ -1,7 +1,7 @@
-use aiken/list
-use aiken/transaction.{Input, ScriptContext, Spend, Transaction, find_input}
-use aiken/transaction/credential.{Address}
-use aiken/transaction/value.{from_lovelace}
+use aiken/collection/list
+use cardano/address.{Address}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{Input, OutputReference, Transaction, find_input}
 use mocktail.{complete, mocktail_tx, tx_in}
 use mocktail/virgin_address.{mock_pub_key_address, mock_script_address}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
@@ -41,21 +41,23 @@ test m203_l1_test_vodka_util_inputs_at() {
 /// 1. Learn how to find the input current validating from context.transaction
 /// 2. Learn how to filter address for the inputs, with Vodka util inputs_at
 /// 3. Understand that in Cardano, seldomly there is only 1 input, i.e. script input + user input for covering some tx fee etc
-validator {
-  fn check_only_script_input_spending_validator(
-    _datum: Data,
+validator check_only_script_input {
+  spend(
+    _datum: Option<Data>,
     _redeemer: Data,
-    context: ScriptContext,
+    input: OutputReference,
+    tx: Transaction,
   ) {
-    let ScriptContext { transaction, purpose } = context
-    let Transaction { inputs, .. } = transaction
-
-    expect Spend(utxo_ref) = purpose
-    expect Some(own_input) = find_input(inputs, utxo_ref)
+    let Transaction { inputs, .. } = tx
+    expect Some(own_input) = find_input(inputs, input)
     when inputs_at(inputs, own_input.output.address) is {
       [_] -> True
       _ -> False
     }
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -85,19 +87,11 @@ fn mock_tx(test_case: TestCase) -> Transaction {
 }
 
 test m203_l1_test_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(TestCase { is_only_one_script_input: True }),
-    }
-  check_only_script_input_spending_validator(Void, Void, context)
+  let tx = mock_tx(TestCase { is_only_one_script_input: True })
+  check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l1_test_fail_with_multiple_script_inputs() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(TestCase { is_only_one_script_input: False }),
-    }
-  !check_only_script_input_spending_validator(Void, Void, context)
+  let tx = mock_tx(TestCase { is_only_one_script_input: False })
+  !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }

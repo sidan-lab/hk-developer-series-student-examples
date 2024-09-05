@@ -1,17 +1,17 @@
-use aiken/transaction.{
-  InlineDatum, Input, ScriptContext, Spend, Transaction, find_input,
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{
+  InlineDatum, Input, OutputReference, Transaction, find_input,
 }
-use aiken/transaction/value.{from_lovelace}
 use mocktail.{complete, mocktail_tx, tx_in, tx_in_inline_datum}
 use mocktail/virgin_address.{mock_pub_key_address}
 use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 
-type Datum {
+pub type Datum {
   Datum1 { secret: ByteArray }
   Datum2
 }
 
-type Redeemer {
+pub type Redeemer {
   RedeemerWithMessage { message: ByteArray }
 }
 
@@ -19,16 +19,15 @@ type Redeemer {
 /// 1. Understand the reason behind directly using datum producing in type signature input is unpopular in Cardano development 
 ///    - since it can be accessed from context.transaction
 /// 2. Learn about how to cast the Data type into the customized data type
-validator {
-  fn check_script_input_value_spending_validator(
-    _datum: Datum,
+validator check_script_input_value {
+  spend(
+    _datum_opt: Option<Datum>,
     redeemer: Redeemer,
-    context: ScriptContext,
+    input: OutputReference,
+    tx: Transaction,
   ) {
-    let ScriptContext { transaction, purpose } = context
-    let Transaction { inputs, .. } = transaction
-    expect Spend(utxo_ref) = purpose
-    expect Some(own_input) = find_input(inputs, utxo_ref)
+    let Transaction { inputs, .. } = tx
+    expect Some(own_input) = find_input(inputs, input)
 
     expect InlineDatum(raw_datum) = own_input.output.datum
     expect input_datum: Datum = raw_datum
@@ -37,6 +36,10 @@ validator {
       Datum1 { secret } -> message == secret
       Datum2 -> False
     }
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -73,46 +76,36 @@ fn mock_tx(test_case: TestCase) -> Transaction {
 }
 
 test m203_l3_test_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_datum_correct: True, is_secret_provided: True },
-      ),
-    }
-  check_script_input_value_spending_validator(
-    Datum1 { secret: "hello world" },
+  let tx =
+    mock_tx(TestCase { is_datum_correct: True, is_secret_provided: True })
+
+  check_script_input_value.spend(
+    Some(Datum1 { secret: "hello world" }),
     RedeemerWithMessage { message: "hello world" },
-    context,
+    mock_utxo_ref(0, 0),
+    tx,
   )
 }
 
 test m203_l3_test_fail_with_wrong_secret() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_datum_correct: True, is_secret_provided: False },
-      ),
-    }
-  !check_script_input_value_spending_validator(
-    Datum1 { secret: "hello world" },
+  let tx =
+    mock_tx(TestCase { is_datum_correct: True, is_secret_provided: False })
+
+  !check_script_input_value.spend(
+    Some(Datum1 { secret: "hello world" }),
     RedeemerWithMessage { message: "hello world" },
-    context,
+    mock_utxo_ref(0, 0),
+    tx,
   )
 }
 
 test m203_l3_test_fail_with_wrong_datum() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_tx(
-        TestCase { is_datum_correct: False, is_secret_provided: True },
-      ),
-    }
-  !check_script_input_value_spending_validator(
-    Datum1 { secret: "hello world" },
+  let tx =
+    mock_tx(TestCase { is_datum_correct: False, is_secret_provided: True })
+  !check_script_input_value.spend(
+    Some(Datum1 { secret: "hello world" }),
     RedeemerWithMessage { message: "hello world" },
-    context,
+    mock_utxo_ref(0, 0),
+    tx,
   )
 }

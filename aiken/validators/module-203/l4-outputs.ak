@@ -1,7 +1,5 @@
-use aiken/transaction.{
-  InlineDatum, ScriptContext, Spend, Transaction, find_input,
-}
-use aiken/transaction/value.{from_lovelace}
+use cardano/assets.{from_lovelace}
+use cardano/transaction.{InlineDatum, OutputReference, Transaction, find_input}
 use mocktail.{
   complete, mocktail_tx, tx_in, tx_in_inline_datum, tx_out, tx_out_inline_datum,
 }
@@ -10,12 +8,12 @@ use mocktail/virgin_output_reference.{mock_tx_hash, mock_utxo_ref}
 use vodka_inputs.{inputs_at}
 use vodka_outputs.{outputs_at}
 
-type Datum {
+pub type Datum {
   Initialize
   ActiveTransition { count: Int }
 }
 
-type Redeemer {
+pub type Redeemer {
   IncrementCount
   CloseState
 }
@@ -25,16 +23,15 @@ type Redeemer {
 ///    - check only 1 input and output from same address with updated datum
 /// 2. Can distinguish between: the smart contract updates the datum vs the script validate if datum is updated -> building early concept on cardano validator
 /// 3. Understand that the script might not be performed as imagined - starter can start with ending datum
-validator {
-  fn state_change_spending_validator(
-    datum: Datum,
+validator state_change {
+  spend(
+    datum_opt: Option<Datum>,
     redeemer: Redeemer,
-    context: ScriptContext,
+    input: OutputReference,
+    tx: Transaction,
   ) {
-    let ScriptContext { transaction, purpose } = context
-    let Transaction { inputs, outputs, .. } = transaction
-    expect Spend(utxo_ref) = purpose
-    expect Some(own_input) = find_input(inputs, utxo_ref)
+    let Transaction { inputs, outputs, .. } = tx
+    expect Some(own_input) = find_input(inputs, input)
     let own_address = own_input.output.address
 
     when redeemer is {
@@ -59,11 +56,15 @@ validator {
         }
 
       CloseState ->
-        when datum is {
-          ActiveTransition { count } -> count >= 10
+        when datum_opt is {
+          Some(ActiveTransition { count }) -> count >= 10
           _ -> False
         }
     }
+  }
+
+  else(_) {
+    fail
   }
 }
 
@@ -123,99 +124,81 @@ fn mock_increment_tx(test_case: IncrementTestCase) -> Transaction {
 }
 
 test m203_l4_test_increment_success_at_initialization() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: True,
-          is_only_one_script_output: True,
-          is_current_datum_initialize: True,
-          is_datum_updated: True,
-        },
-      ),
-    }
-  state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: True,
+        is_only_one_script_output: True,
+        is_current_datum_initialize: True,
+        is_datum_updated: True,
+      },
+    )
+  state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_increment_success_at_active_transition() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: True,
-          is_only_one_script_output: True,
-          is_current_datum_initialize: False,
-          is_datum_updated: True,
-        },
-      ),
-    }
-  state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: True,
+        is_only_one_script_output: True,
+        is_current_datum_initialize: False,
+        is_datum_updated: True,
+      },
+    )
+  state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_increment_fail_with_wrong_datum_1() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: True,
-          is_only_one_script_output: True,
-          is_current_datum_initialize: True,
-          is_datum_updated: False,
-        },
-      ),
-    }
-  !state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: True,
+        is_only_one_script_output: True,
+        is_current_datum_initialize: True,
+        is_datum_updated: False,
+      },
+    )
+  !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_increment_fail_with_wrong_datum_2() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: True,
-          is_only_one_script_output: True,
-          is_current_datum_initialize: False,
-          is_datum_updated: False,
-        },
-      ),
-    }
-  !state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: True,
+        is_only_one_script_output: True,
+        is_current_datum_initialize: False,
+        is_datum_updated: False,
+      },
+    )
+  !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_increment_fail_with_multiple_script_inputs() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: False,
-          is_only_one_script_output: True,
-          is_current_datum_initialize: True,
-          is_datum_updated: True,
-        },
-      ),
-    }
-  !state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: False,
+        is_only_one_script_output: True,
+        is_current_datum_initialize: True,
+        is_datum_updated: True,
+      },
+    )
+  !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_increment_fail_with_multiple_script_outputs() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_increment_tx(
-        IncrementTestCase {
-          is_only_one_script_input: True,
-          is_only_one_script_output: False,
-          is_current_datum_initialize: True,
-          is_datum_updated: True,
-        },
-      ),
-    }
-  !state_change_spending_validator(Initialize, IncrementCount, context)
+  let tx =
+    mock_increment_tx(
+      IncrementTestCase {
+        is_only_one_script_input: True,
+        is_only_one_script_output: False,
+        is_current_datum_initialize: True,
+        is_datum_updated: True,
+      },
+    )
+  !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
 type CloseStateTestCase {
@@ -244,31 +227,14 @@ fn mock_close_state_tx(test_case: CloseStateTestCase) -> Transaction {
 }
 
 test m203_l4_test_close_state_success() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_close_state_tx(
-        CloseStateTestCase { is_count_sufficient: True },
-      ),
-    }
-  state_change_spending_validator(
-    ActiveTransition { count: 10 },
-    CloseState,
-    context,
-  )
+  let datum = Some(ActiveTransition { count: 10 })
+  let tx = mock_close_state_tx(CloseStateTestCase { is_count_sufficient: True })
+  state_change.spend(datum, CloseState, mock_utxo_ref(0, 0), tx)
 }
 
 test m203_l4_test_close_state_fail_with_insufficient_count() {
-  let context =
-    ScriptContext {
-      purpose: Spend(mock_utxo_ref(0, 0)),
-      transaction: mock_close_state_tx(
-        CloseStateTestCase { is_count_sufficient: False },
-      ),
-    }
-  !state_change_spending_validator(
-    ActiveTransition { count: 9 },
-    CloseState,
-    context,
-  )
+  let datum = Some(ActiveTransition { count: 9 })
+  let tx =
+    mock_close_state_tx(CloseStateTestCase { is_count_sufficient: False })
+  !state_change.spend(datum, CloseState, mock_utxo_ref(0, 0), tx)
 }

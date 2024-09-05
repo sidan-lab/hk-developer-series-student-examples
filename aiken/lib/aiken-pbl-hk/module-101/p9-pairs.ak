@@ -1,4 +1,4 @@
-use aiken/list
+use aiken/collection/list
 
 type Dict<value_type> =
   Pairs<ByteArray, value_type>
