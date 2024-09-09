@@ -58,6 +58,8 @@ export class MeshTx {
     ownerPubKeyHash: "",
   };
   oracle?: { address: string; utxoTxHash: string; utxoTxIndex: number };
+  accountAddress?: string;
+
   constructor(public wallet: MeshWallet, params?: ScriptParam) {
     const address = this.wallet.getUsedAddresses()[0];
     this.address = address;

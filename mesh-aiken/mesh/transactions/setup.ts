@@ -50,6 +50,10 @@ export class SetupContract extends MeshTx {
     const paramUtxo = utxos[0];
     this.params.oracleTxHash = paramUtxo.input.txHash;
     this.params.oracleTxIndex = paramUtxo.input.outputIndex;
+    this.accountAddress = serializePlutusScript({
+      code: getScriptCbor("Account", this.params),
+      version: "V3",
+    }).address;
     console.log("Application initialized with parameters:", this.params);
 
     const script = getScriptCbor("OracleNFT", this.params);
