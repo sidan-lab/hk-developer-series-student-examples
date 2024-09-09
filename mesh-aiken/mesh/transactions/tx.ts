@@ -14,7 +14,6 @@ import {
   serializePlutusScript,
   serializeRewardAddress,
   stringToHex,
-  UTxO,
 } from "@meshsdk/core";
 import { MeshTx, provider } from "../common";
 
