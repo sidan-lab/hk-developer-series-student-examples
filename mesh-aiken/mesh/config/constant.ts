@@ -4,7 +4,6 @@ import {
   mOutputReference,
   mScriptAddress,
   resolveScriptHash,
-  serializePlutusScript,
 } from "@meshsdk/core";
 
 export type ScriptParam = {
@@ -44,7 +43,7 @@ export const getScriptRawCode = (index: ScriptIndex) => {
   }
 };
 
-export const getScriptCbors = (index: ScriptIndex, param: ScriptParam) => {
+export const getScriptCbor = (index: ScriptIndex, param: ScriptParam) => {
   const accountOracle = applyCborEncoding(getScriptRawCode("AccountOracle"));
   const oracleNFT = applyParamsToScript(getScriptRawCode("OracleNFT"), [
     mOutputReference(param.oracleTxHash, param.oracleTxIndex),
@@ -95,6 +94,6 @@ export const getScriptCbors = (index: ScriptIndex, param: ScriptParam) => {
 };
 
 export const getScriptHash = (index: ScriptIndex, param: ScriptParam) => {
-  const scriptCbor = getScriptCbors(index, param);
+  const scriptCbor = getScriptCbor(index, param);
   return resolveScriptHash(scriptCbor, "V3");
 };

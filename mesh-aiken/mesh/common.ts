@@ -3,8 +3,11 @@ import {
   AppWalletKeyType,
   YaciProvider,
   MeshTxBuilder,
+  deserializeAddress,
+  serializePlutusScript,
 } from "@meshsdk/core";
 import axios from "axios";
+import { getScriptCbor, getScriptHash, ScriptParam } from "./config/constant";
 
 const yaciBaseUrl = process.env.YACI_BASE_URL || "https://yaci-node.meshjs.dev";
 
@@ -49,16 +52,28 @@ export const newWallet = (providedMnemonic?: string[]) => {
 
 export class MeshTx {
   address: string;
-  constructor(public wallet: MeshWallet) {
+  params: ScriptParam = {
+    oracleTxHash: "",
+    oracleTxIndex: 0,
+    ownerPubKeyHash: "",
+  };
+  oracle?: { address: string; utxoTxHash: string; utxoTxIndex: number };
+  constructor(public wallet: MeshWallet, params?: ScriptParam) {
     const address = this.wallet.getUsedAddresses()[0];
     this.address = address;
+    const pubKeyHash = deserializeAddress(address).pubKeyHash;
+    this.params.ownerPubKeyHash = pubKeyHash;
   }
 
-  newTx = async () => {
-    const txBuilder = new MeshTxBuilder({
+  newTxBuilder = () => {
+    return new MeshTxBuilder({
       fetcher: provider,
       evaluator: provider,
     });
+  };
+
+  newTx = async () => {
+    const txBuilder = this.newTxBuilder();
     const utxos = await this.wallet.getUtxos();
     txBuilder.changeAddress(this.address).selectUtxosFrom(utxos);
     return txBuilder;
