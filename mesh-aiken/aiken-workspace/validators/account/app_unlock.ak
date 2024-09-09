@@ -2,6 +2,7 @@ use aiken/collection/list
 use aiken_game_account/types.{AccountOracleDatum}
 use cardano/address.{Credential}
 use cardano/assets.{PolicyId, merge, zero}
+use cardano/certificate.{Certificate}
 use cardano/transaction.{Transaction}
 use vodka_address.{address_script_hash}
 use vodka_extra_signatories.{key_signed}
@@ -53,7 +54,7 @@ validator account_app_unlock(oracle_nft: PolicyId) {
     }
   }
 
-  publish(_redeemer: Data, _credential: Credential, tx: Transaction) {
+  publish(_redeemer: Data, _credential: Certificate, tx: Transaction) {
     let Transaction { reference_inputs, .. } = tx
     expect AccountOracleDatum { operation_key, .. }: AccountOracleDatum =
       only_input_datum_with(reference_inputs, oracle_nft, "")
