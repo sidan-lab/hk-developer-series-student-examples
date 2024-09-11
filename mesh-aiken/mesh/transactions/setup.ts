@@ -10,25 +10,25 @@ import {
   serializePlutusScript,
   serializeRewardAddress,
 } from "@meshsdk/core";
-import { MeshTx } from "../common";
-import { getScriptCbor, getScriptHash, ScriptParam } from "../config/constant";
+import { MeshTx } from "../config/common";
+import { getScriptCbor, getScriptHash, ScriptParams } from "../config";
 import { OracleDatum } from "../config/types";
-import { operationKey, stopKey } from "../config/keys";
+import { opsKey, stopKey } from "../config/keys";
 
 export class SetupContract extends MeshTx {
-  constructor(wallet: MeshWallet, params?: ScriptParam) {
+  constructor(wallet: MeshWallet, params?: ScriptParams) {
     super(wallet, params);
   }
 
   registerAllStakeCerts = async () => {
-    const appUnlock = getScriptCbor("AppUnlock", this.params);
+    const appUnlock = getScriptCbor("AccountAppUnlock", this.params);
     const appUnlockHash = resolveScriptHash(appUnlock, "V3");
     const appUnlockRewardAddress = serializeRewardAddress(
       appUnlockHash,
       true,
       0
     );
-    const userUnlock = getScriptCbor("UserUnlock", this.params);
+    const userUnlock = getScriptCbor("AccountUserUnlock", this.params);
     const userUnlockHash = resolveScriptHash(userUnlock, "V3");
     const userUnlockRewardAddress = serializeRewardAddress(
       userUnlockHash,
@@ -48,15 +48,15 @@ export class SetupContract extends MeshTx {
     const utxos = await this.wallet.getUtxos();
     const collateral = (await this.wallet.getCollateral())[0];
     const paramUtxo = utxos[0];
-    this.params.oracleTxHash = paramUtxo.input.txHash;
-    this.params.oracleTxIndex = paramUtxo.input.outputIndex;
+    this.params.accountOracleParamUtxoTxHash = paramUtxo.input.txHash;
+    this.params.accountOracleParamUtxoTxIndex = paramUtxo.input.outputIndex;
     this.accountAddress = serializePlutusScript({
       code: getScriptCbor("Account", this.params),
       version: "V3",
     }).address;
     console.log("Application initialized with parameters:", this.params);
 
-    const script = getScriptCbor("OracleNFT", this.params);
+    const script = getScriptCbor("AccountOracleNFT", this.params);
     const policyId = resolveScriptHash(script, "V3");
 
     const txBuilder = this.newTxBuilder();
@@ -84,21 +84,21 @@ export class SetupContract extends MeshTx {
   };
 
   initOracle = async () => {
-    const oraclePolicyId = getScriptHash("OracleNFT", this.params);
+    const oraclePolicyId = getScriptHash("AccountOracleNFT", this.params);
     const oracleScriptHash = resolveScriptHash(
-      getScriptCbor("AccountOracle", this.params),
+      getScriptCbor("AccountOracleValidator", this.params),
       "V3"
     );
     const emergencyTokenPolicyId = getScriptHash("EmergencyToken", this.params);
     const initOracleDatum: OracleDatum = conStr0([
       policyId(oraclePolicyId),
       scriptAddress(oracleScriptHash),
-      pubKeyHash(operationKey),
+      pubKeyHash(opsKey),
       policyId(emergencyTokenPolicyId),
       pubKeyHash(stopKey),
     ]);
 
-    const accountOracle = getScriptCbor("AccountOracle", this.params);
+    const accountOracle = getScriptCbor("AccountOracleValidator", this.params);
     const oracleAddress = serializePlutusScript({
       code: accountOracle,
       version: "V3",

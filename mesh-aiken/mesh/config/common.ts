@@ -20,7 +20,7 @@ import {
   deserializeBech32Address,
 } from "@meshsdk/core-csl";
 import { ScriptParams } from "./types";
-import { operationAddress, refScriptsAddress } from "./keys";
+import { operationAddress, opsKey, refScriptsAddress, stopKey } from "./keys";
 
 export const getScriptCbor = (
   scriptIndex: ScriptIndex,
@@ -145,13 +145,6 @@ export const getValidatorAddress = (
   return "";
 };
 
-export const deserializedOpsPlutusAddr =
-  deserializeBech32Address(operationAddress);
-export const deserializedStopPlutusAddr =
-  deserializeBech32Address(refScriptsAddress);
-export const opsKey = deserializedOpsPlutusAddr.pubKeyHash;
-export const stopKey = deserializedStopPlutusAddr.pubKeyHash;
-
 export const allScriptInfo = (
   scriptParams: ScriptParams
 ): Record<
@@ -200,6 +193,9 @@ export class MeshTx {
 
   constructor(public wallet: MeshWallet, params?: ScriptParams) {
     const address = this.wallet.getUsedAddresses()[0];
+    if (params) {
+      this.params = params;
+    }
     this.address = address;
     const pubKeyHash = deserializeAddress(address).pubKeyHash;
     this.params.ownerPubKeyHash = pubKeyHash;

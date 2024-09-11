@@ -1,4 +1,4 @@
-import { newWallet, provider, sleep } from "./common";
+import { newWallet, provider, sleep } from "./config";
 import { SetupContract } from "./transactions";
 
 const testTx = async () => {
@@ -23,6 +23,9 @@ const testTx = async () => {
 
   const wallet = newWallet();
   const setup = new SetupContract(wallet);
+  const res = await provider.getGenesis();
+  console.log("Genesis:", res);
+
   await init();
 };
 
