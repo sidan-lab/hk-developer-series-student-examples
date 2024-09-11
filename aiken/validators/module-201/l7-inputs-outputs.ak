@@ -82,7 +82,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m202_l7_test_success() {
+test md201_l7_test_success() {
   let tx =
     mock_tx(
       TestCase {
@@ -96,7 +96,7 @@ test m202_l7_test_success() {
   check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l7_test_fail_with_no_input() {
+test md201_l7_test_fail_with_no_input() {
   let tx =
     mock_tx(
       TestCase {
@@ -110,7 +110,7 @@ test m202_l7_test_fail_with_no_input() {
   !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l7_test_fail_with_multiple_input() {
+test md201_l7_test_fail_with_multiple_input() {
   let tx =
     mock_tx(
       TestCase {
@@ -124,7 +124,7 @@ test m202_l7_test_fail_with_multiple_input() {
   !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l7_test_fail_with_no_output() {
+test md201_l7_test_fail_with_no_output() {
   let tx =
     mock_tx(
       TestCase {
@@ -138,7 +138,7 @@ test m202_l7_test_fail_with_no_output() {
   !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l7_test_fail_with_multiple_output() {
+test md201_l7_test_fail_with_multiple_output() {
   let tx =
     mock_tx(
       TestCase {

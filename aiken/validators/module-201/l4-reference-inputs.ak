@@ -59,7 +59,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m202_l4_test_success() {
+test md201_l4_test_success() {
   let tx =
     mock_tx(
       TestCase { is_ref_input_present: True, is_multiple_ref_inputs: False },
@@ -68,7 +68,7 @@ test m202_l4_test_success() {
   check_reference_inputs.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l4_test_fail_with_no_ref_input() {
+test md201_l4_test_fail_with_no_ref_input() {
   let tx =
     mock_tx(
       TestCase { is_ref_input_present: False, is_multiple_ref_inputs: False },
@@ -77,7 +77,7 @@ test m202_l4_test_fail_with_no_ref_input() {
   !check_reference_inputs.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l4_test_fail_with_multiple_ref_input() {
+test md201_l4_test_fail_with_multiple_ref_input() {
   let tx =
     mock_tx(
       TestCase { is_ref_input_present: False, is_multiple_ref_inputs: True },

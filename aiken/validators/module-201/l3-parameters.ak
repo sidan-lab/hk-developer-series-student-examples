@@ -23,17 +23,17 @@ validator always_succeed(utxo: OutputReference) {
   }
 }
 
-test m202_l3_test_one_time_minting_policy() {
+test md201_l3_test_one_time_minting_policy() {
   let tx =
     mocktail_tx()
       |> tx_in(
           True,
-          mock_tx_hash(0),
+          mock_tx_hash(2),
           0,
           from_lovelace(1_000_000),
           mock_pub_key_address(0, None),
         )
       |> complete()
 
-  always_succeed.mint(mock_utxo_ref(0, 0), Void, mock_policy_id(0), tx)
+  always_succeed.mint(mock_utxo_ref(2, 0), Void, mock_policy_id(0), tx)
 }

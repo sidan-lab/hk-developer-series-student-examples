@@ -123,7 +123,7 @@ fn mock_increment_tx(test_case: IncrementTestCase) -> Transaction {
     |> complete()
 }
 
-test m203_l4_test_increment_success_at_initialization() {
+test md202_l4_test_increment_success_at_initialization() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -136,7 +136,7 @@ test m203_l4_test_increment_success_at_initialization() {
   state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_increment_success_at_active_transition() {
+test md202_l4_test_increment_success_at_active_transition() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -149,7 +149,7 @@ test m203_l4_test_increment_success_at_active_transition() {
   state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_increment_fail_with_wrong_datum_1() {
+test md202_l4_test_increment_fail_with_wrong_datum_1() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -162,7 +162,7 @@ test m203_l4_test_increment_fail_with_wrong_datum_1() {
   !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_increment_fail_with_wrong_datum_2() {
+test md202_l4_test_increment_fail_with_wrong_datum_2() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -175,7 +175,7 @@ test m203_l4_test_increment_fail_with_wrong_datum_2() {
   !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_increment_fail_with_multiple_script_inputs() {
+test md202_l4_test_increment_fail_with_multiple_script_inputs() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -188,7 +188,7 @@ test m203_l4_test_increment_fail_with_multiple_script_inputs() {
   !state_change.spend(Some(Initialize), IncrementCount, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_increment_fail_with_multiple_script_outputs() {
+test md202_l4_test_increment_fail_with_multiple_script_outputs() {
   let tx =
     mock_increment_tx(
       IncrementTestCase {
@@ -226,13 +226,13 @@ fn mock_close_state_tx(test_case: CloseStateTestCase) -> Transaction {
     |> complete()
 }
 
-test m203_l4_test_close_state_success() {
+test md202_l4_test_close_state_success() {
   let datum = Some(ActiveTransition { count: 10 })
   let tx = mock_close_state_tx(CloseStateTestCase { is_count_sufficient: True })
   state_change.spend(datum, CloseState, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l4_test_close_state_fail_with_insufficient_count() {
+test md202_l4_test_close_state_fail_with_insufficient_count() {
   let datum = Some(ActiveTransition { count: 9 })
   let tx =
     mock_close_state_tx(CloseStateTestCase { is_count_sufficient: False })

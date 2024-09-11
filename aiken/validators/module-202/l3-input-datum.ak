@@ -16,7 +16,7 @@ pub type Redeemer {
 }
 
 /// Learning objecting
-/// 1. Understand the reason behind directly using datum producing in type signature input is unpopular in Cardano development 
+/// 1. Understand the reason behind directly using datum producing in type signature input is unpopular in Cardano development
 ///    - since it can be accessed from context.transaction
 /// 2. Learn about how to cast the Data type into the customized data type
 validator check_script_input_value {
@@ -75,7 +75,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m203_l3_test_success() {
+test md202_l3_test_success() {
   let tx =
     mock_tx(TestCase { is_datum_correct: True, is_secret_provided: True })
 
@@ -87,7 +87,7 @@ test m203_l3_test_success() {
   )
 }
 
-test m203_l3_test_fail_with_wrong_secret() {
+test md202_l3_test_fail_with_wrong_secret() {
   let tx =
     mock_tx(TestCase { is_datum_correct: True, is_secret_provided: False })
 
@@ -99,7 +99,7 @@ test m203_l3_test_fail_with_wrong_secret() {
   )
 }
 
-test m203_l3_test_fail_with_wrong_datum() {
+test md202_l3_test_fail_with_wrong_datum() {
   let tx =
     mock_tx(TestCase { is_datum_correct: False, is_secret_provided: True })
   !check_script_input_value.spend(

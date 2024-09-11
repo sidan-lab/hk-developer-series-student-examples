@@ -33,21 +33,21 @@ validator check_datum {
   }
 }
 
-test m202_l2_test_success() {
+test md201_l2_test_success() {
   let datum = Some(Datum1 { secret: "hello world" })
   let redeemer = RedeemerWithMessage { message: "hello world" }
 
   check_datum.spend(datum, redeemer, mock_utxo_ref(0, 0), placeholder)
 }
 
-test m202_l2_test_fail_with_incorrect_redeemer_message() {
+test md201_l2_test_fail_with_incorrect_redeemer_message() {
   let datum = Some(Datum1 { secret: "hello world" })
   let redeemer = RedeemerWithMessage { message: "GM Cardano" }
 
   !check_datum.spend(datum, redeemer, mock_utxo_ref(0, 0), placeholder)
 }
 
-test m202_l2_test_fail_with_fail_datum() {
+test md201_l2_test_fail_with_fail_datum() {
   let datum = Some(Datum2)
   let redeemer = RedeemerWithMessage { message: "hello world" }
 

@@ -25,7 +25,7 @@ fn inputs_value_from_address(inputs: List<Input>, address: Address) -> Value {
   )
 }
 
-test m203_l2_test_vodka_util_inputs_at() {
+test md202_l2_test_vodka_util_inputs_at() {
   let address = mock_pub_key_address(0, None)
   let inputs =
     [
@@ -141,7 +141,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m203_l2_2_test_success() {
+test md202_l2_2_test_success() {
   let datum =
     Some(Datum { minimum_script_lovelace: 15_000_000, minimum_script_token: 2 })
   let tx =
@@ -162,7 +162,7 @@ test m203_l2_2_test_success() {
   )
 }
 
-test m203_l2_2_test_failed_with_insufficient_lovelace() {
+test md202_l2_2_test_failed_with_insufficient_lovelace() {
   let datum =
     Some(Datum { minimum_script_lovelace: 15_000_000, minimum_script_token: 2 })
   let tx =
@@ -183,7 +183,7 @@ test m203_l2_2_test_failed_with_insufficient_lovelace() {
   )
 }
 
-test m203_l2_2_test_failed_with_insufficient_token() {
+test md202_l2_2_test_failed_with_insufficient_token() {
   let datum =
     Some(Datum { minimum_script_lovelace: 15_000_000, minimum_script_token: 2 })
   let tx =

@@ -40,19 +40,19 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m202_l5_test_success() {
+test md201_l5_test_success() {
   let tx = mock_tx(TestCase { is_key_signed: True })
   let datum = Some(Datum { owner: mock_pub_key_hash(0) })
   check_signatures.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l5_test_failed_without_signer() {
+test md201_l5_test_failed_without_signer() {
   let tx = mock_tx(TestCase { is_key_signed: False })
   let datum = Some(Datum { owner: mock_pub_key_hash(0) })
   !check_signatures.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l5_test_failed_with_incorrect_signer() {
+test md201_l5_test_failed_with_incorrect_signer() {
   let tx = mock_tx(TestCase { is_key_signed: True })
   let datum = Some(Datum { owner: mock_pub_key_hash(1) })
   !check_signatures.spend(datum, Void, mock_utxo_ref(0, 0), tx)

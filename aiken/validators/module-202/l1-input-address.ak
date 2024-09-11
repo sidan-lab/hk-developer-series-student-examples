@@ -15,7 +15,7 @@ fn filter_address_for_inputs(
   list.filter(inputs, fn(input) { input.output.address == address })
 }
 
-test m203_l1_test_vodka_util_inputs_at() {
+test md202_l1_test_vodka_util_inputs_at() {
   let address = mock_pub_key_address(0, None)
   let inputs =
     [
@@ -86,12 +86,12 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m203_l1_test_success() {
+test md202_l1_test_success() {
   let tx = mock_tx(TestCase { is_only_one_script_input: True })
   check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m203_l1_test_fail_with_multiple_script_inputs() {
+test md202_l1_test_fail_with_multiple_script_inputs() {
   let tx = mock_tx(TestCase { is_only_one_script_input: False })
   !check_only_script_input.spend(None, Void, mock_utxo_ref(0, 0), tx)
 }

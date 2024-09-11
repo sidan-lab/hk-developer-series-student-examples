@@ -3,7 +3,11 @@ use mocktail/virgin_output_reference.{mock_utxo_ref}
 
 pub type Redeemer {
   SuccessRedeemer
+  AnotherSuccessCase
   FailRedeemer
+  AnotherFailCase
+  AnotherWayToFail
+  MoreFailure
 }
 
 /// Learning objecting
@@ -17,7 +21,8 @@ validator check_redeemer {
   ) {
     when redeemer is {
       SuccessRedeemer -> True
-      FailRedeemer -> False
+      AnotherSuccessCase -> True
+      _ -> False
     }
   }
 
@@ -26,12 +31,12 @@ validator check_redeemer {
   }
 }
 
-test m202_l1_test_success_redeemer() {
-  let redeemer = SuccessRedeemer
+test md201_l1_test_success_redeemer() {
+  let redeemer = AnotherSuccessCase
   check_redeemer.spend(None, redeemer, mock_utxo_ref(0, 0), placeholder)
 }
 
-test m202_l1_test_fail_redeemer() {
-  let redeemer = FailRedeemer
+test md201_l1_test_fail_redeemer() {
+  let redeemer = AnotherWayToFail
   !check_redeemer.spend(None, redeemer, mock_utxo_ref(0, 0), placeholder)
 }

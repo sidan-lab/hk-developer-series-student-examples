@@ -47,7 +47,7 @@ fn mock_tx(test_case: TestCase) -> Transaction {
     |> complete()
 }
 
-test m202_l6_test_success() {
+test md201_l6_test_success() {
   let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
   let tx =
     mock_tx(
@@ -59,7 +59,7 @@ test m202_l6_test_success() {
   check_time.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l6_test_failed_with_invalid_before() {
+test md201_l6_test_failed_with_invalid_before() {
   let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
   let tx =
     mock_tx(
@@ -71,7 +71,7 @@ test m202_l6_test_failed_with_invalid_before() {
   !check_time.spend(datum, Void, mock_utxo_ref(0, 0), tx)
 }
 
-test m202_l6_test_failed_with_invalid_hereafter() {
+test md201_l6_test_failed_with_invalid_hereafter() {
   let datum = Some(Datum { must_be_after: 100, must_be_before: 200 })
   let tx =
     mock_tx(
