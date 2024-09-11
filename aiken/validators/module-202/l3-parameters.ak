@@ -23,7 +23,7 @@ validator always_succeed(utxo: OutputReference) {
   }
 }
 
-test m202_l1_test_one_time_minting_policy() {
+test m202_l3_test_one_time_minting_policy() {
   let tx =
     mocktail_tx()
       |> tx_in(

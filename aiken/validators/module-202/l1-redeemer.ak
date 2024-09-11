@@ -26,12 +26,12 @@ validator check_redeemer {
   }
 }
 
-test m202_l2_test_success_redeemer() {
+test m202_l1_test_success_redeemer() {
   let redeemer = SuccessRedeemer
   check_redeemer.spend(None, redeemer, mock_utxo_ref(0, 0), placeholder)
 }
 
-test m202_l2_test_fail_redeemer() {
+test m202_l1_test_fail_redeemer() {
   let redeemer = FailRedeemer
   !check_redeemer.spend(None, redeemer, mock_utxo_ref(0, 0), placeholder)
 }
