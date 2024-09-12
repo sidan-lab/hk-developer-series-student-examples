@@ -37,7 +37,7 @@ export class SetupContract extends MeshTx {
     );
     const txBuilder = await this.newValidationTx();
     const txHex = await txBuilder
-      .registerStakeCertificate(appUnlockRewardAddress)
+      // .registerStakeCertificate(appUnlockRewardAddress)
       .registerStakeCertificate(userUnlockRewardAddress)
       .complete();
 

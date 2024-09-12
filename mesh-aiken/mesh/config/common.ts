@@ -12,7 +12,12 @@ import {
   scriptAddress,
   serializePlutusScript,
 } from "@meshsdk/core";
-import { scriptCompiledCode, ScriptIndex, stakeCred } from "./constant";
+import {
+  scriptCompiledCode,
+  ScriptIndex,
+  scriptParams,
+  stakeCred,
+} from "./constant";
 import { provider } from "./provider";
 import {
   applyParamsToScript,
@@ -183,11 +188,7 @@ export const allScriptInfo = (
 
 export class MeshTx {
   address: string;
-  params: ScriptParams = {
-    accountOracleParamUtxoTxHash: "",
-    accountOracleParamUtxoTxIndex: 0,
-    ownerPubKeyHash: "",
-  };
+  params: ScriptParams = scriptParams;
   oracle?: { address: string; utxoTxHash: string; utxoTxIndex: number };
   accountAddress?: string;
 

@@ -2,6 +2,7 @@ import {
   deserializeAddress,
   mConStr0,
   mConStr2,
+  MeshTxBuilder,
   MeshWallet,
   resolveScriptHash,
   serializePlutusScript,
@@ -15,6 +16,7 @@ import {
   ScriptParams,
   opsKey,
   operationWallet,
+  provider,
 } from "../config";
 
 export class AccountTx extends MeshTx {
@@ -44,51 +46,12 @@ export class AccountTx extends MeshTx {
   };
 
   userUnlock = async (accountUtxos: UTxO[]) => {
-    const { utxos, walletAddress, collateral } =
-      await this.getWalletInfoForTx();
     const txBuilder = await this.newValidationTx();
-
-    for (const utxo of accountUtxos) {
-      txBuilder
-        .spendingPlutusScriptV3()
-        .txIn(
-          utxo.input.txHash,
-          utxo.input.outputIndex,
-          utxo.output.amount,
-          utxo.output.address
-        )
-        .txInRedeemerValue(mConStr0([]))
-        .txInScript(getScriptCbor("Account", this.params))
-        .txInInlineDatumPresent();
-    }
-
-    const userUnlockScriptHash = getScriptHash(
-      "AccountUserUnlock",
-      this.params
-    );
-
-    const userUnlockAddress = serializeRewardAddress(
-      userUnlockScriptHash,
-      true,
-      0
-    );
+    this.singleUserUnlock(txBuilder, this.wallet, accountUtxos);
 
     await txBuilder
-      .withdrawalPlutusScriptV3()
-      .withdrawal(userUnlockAddress, "0")
-      .withdrawalScript(getScriptCbor("AccountUserUnlock", this.params))
-      .withdrawalRedeemerValue(mConStr0([]))
       .readOnlyTxInReference(refUtxo.txHash, refUtxo.outputIndex)
-      .requiredSignerHash(this.params.ownerPubKeyHash!)
       .requiredSignerHash(opsKey)
-      .txInCollateral(
-        collateral.input.txHash,
-        collateral.input.outputIndex,
-        collateral.output.amount,
-        collateral.output.address
-      )
-      .changeAddress(walletAddress)
-      .selectUtxosFrom(utxos)
       .complete();
 
     const partialSignedTx = operationWallet.signTx(txBuilder.txHex, true);
@@ -106,6 +69,28 @@ export class AccountTx extends MeshTx {
     );
 
     const txBuilder = await this.newValidationTx();
+
+    const txHex = await txBuilder
+      .readOnlyTxInReference(
+        this.oracle?.utxoTxHash!,
+        this.oracle?.utxoTxIndex!
+      )
+      .complete();
+
+    return txHex;
+  };
+
+  protected singleUserUnlock = async (
+    txBuilder: MeshTxBuilder,
+    wallet: MeshWallet,
+    accountUtxos: UTxO[]
+  ) => {
+    const walletAddress = wallet.getUsedAddresses()[0];
+    const params = {
+      ...this.params,
+      ownerPubKeyHash: deserializeAddress(walletAddress).pubKeyHash,
+    };
+    const ownPubKey = deserializeAddress(walletAddress).pubKeyHash;
     for (const utxo of accountUtxos) {
       txBuilder
         .spendingPlutusScriptV3()
@@ -116,22 +101,51 @@ export class AccountTx extends MeshTx {
           utxo.output.address
         )
         .txInInlineDatumPresent()
-        .txInRedeemerValue(mConStr2([]))
-        .txInScript(getScriptCbor("Account", this.params));
+        .txInRedeemerValue(mConStr0([]))
+        .txInScript(getScriptCbor("Account", params));
     }
 
-    const txHex = await txBuilder
-      .withdrawalPlutusScriptV3()
-      .withdrawal(withdrawScriptRewardAddress, "0")
-      .withdrawalScript(withdrawScriptCbor)
-      .withdrawalRedeemerValue("")
-      .requiredSignerHash(ownPubKey)
-      .readOnlyTxInReference(
-        this.oracle?.utxoTxHash!,
-        this.oracle?.utxoTxIndex!
-      )
-      .complete();
+    const userUnlockScriptCbor = getScriptCbor("AccountUserUnlock", params);
+    const userUnlockScriptHash = resolveScriptHash(userUnlockScriptCbor, "V3");
 
-    return txHex;
+    const userUnlockAddress = serializeRewardAddress(
+      userUnlockScriptHash,
+      true,
+      0
+    );
+
+    txBuilder
+      .withdrawalPlutusScriptV3()
+      .withdrawal(userUnlockAddress, "0")
+      .withdrawalScript(userUnlockScriptCbor)
+      .withdrawalRedeemerValue("", "Mesh", { steps: 40000000, mem: 200000 })
+      .requiredSignerHash(ownPubKey);
   };
+
+  static async getAccountUtxos(params: ScriptParams, lovelaceAmount = -1) {
+    const accountAddress = serializePlutusScript({
+      code: getScriptCbor("Account", params),
+      version: "V3",
+    }).address;
+    const accountUtxos = await provider.fetchAddressUTxOs(accountAddress);
+
+    let selectedAmount = 0;
+    for (let i = 0; i < accountUtxos.length; i++) {
+      selectedAmount += Number(
+        accountUtxos[i].output.amount.find((a) => a.unit === "lovelace")!
+          .quantity
+      );
+      if (selectedAmount >= lovelaceAmount && lovelaceAmount >= 0) {
+        accountUtxos.splice(i + 1);
+        break;
+      }
+    }
+
+    if (selectedAmount < lovelaceAmount) {
+      throw new Error("Insufficient account utxos funds");
+    }
+
+    console.log("accountUtxos:", accountUtxos);
+    return { accountUtxos, selectedAmount };
+  }
 }
