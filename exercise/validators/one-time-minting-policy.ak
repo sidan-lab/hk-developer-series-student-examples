@@ -1,5 +1,5 @@
 use aiken/collection/list
-use cardano/assets.{PolicyId, zero}
+use cardano/assets.{PolicyId, flatten, zero}
 use cardano/transaction.{OutputReference, Transaction}
 use mocktail.{complete, mint, mocktail_tx, tx_in}
 use mocktail/virgin_address.{mock_pub_key_address}
@@ -23,7 +23,7 @@ validator one_time_minting_policy(utxo: OutputReference) {
           list.find(tx.inputs, fn(input) { input.output_reference == utxo })
         is {
           Some(_) -> True
-          _ -> False
+          None -> False
         }
       Burn -> check_policy_only_burn(tx.mint, policy_id)
     }
