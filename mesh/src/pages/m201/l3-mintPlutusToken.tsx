@@ -1,5 +1,5 @@
 import { resolveScriptHash, stringToHex } from "@meshsdk/core";
-import { applyCborEncoding } from "@meshsdk/core-csl";
+import { applyParamsToScript, applyCborEncoding } from "@meshsdk/core-csl";
 import { MaestroProvider, MeshTxBuilder } from "@meshsdk/core";
 import { CardanoWallet, useWallet } from "@meshsdk/react";
 
@@ -13,7 +13,8 @@ const maestroApiKey = "A41FZ8csuxpIZ8MVnlvU1jPsY43sAv4m";
 const alwaysSucceedMintingRawScript =
   "5850010100323232323225333002323232323253330073370e900018041baa0011324a26eb8c028c024dd50008b1804980500118040009804001180300098021baa00114984d9595cd2ab9d5573cae855d11";
 
-const scriptCbor = applyCborEncoding(alwaysSucceedMintingRawScript);
+const scriptCbor = applyParamsToScript(alwaysSucceedMintingRawScript, []);
+// const scriptCbor = applyCborEncoding(alwaysSucceedMintingRawScript);
 
 const MintPlutusToken = () => {
   const { wallet } = useWallet();
@@ -39,6 +40,10 @@ const MintPlutusToken = () => {
       .mint("1", policyId, stringToHex("Hinson token"))
       .mintingScript(scriptCbor)
       .mintRedeemerValue("")
+      .txOut(address, [
+        { unit: policyId + stringToHex("Hinson token"), quantity: "1" },
+        { unit: "lovelace", quantity: "2000000" },
+      ])
       .changeAddress(address)
       .selectUtxosFrom(utxso)
       .txInCollateral(
