@@ -1,5 +1,5 @@
 use aiken/collection/list
-use cardano/assets.{PolicyId, flatten, zero}
+use cardano/assets.{PolicyId, zero}
 use cardano/transaction.{OutputReference, Transaction}
 use mocktail.{complete, mint, mocktail_tx, tx_in}
 use mocktail/virgin_address.{mock_pub_key_address}
