@@ -26,13 +26,13 @@ export type ScriptIndex =
   | "AccountOracleNFT";
 
 export const scriptCompiledCode: Record<ScriptIndex, string> = {
-  Account: blueprint.validators[0].compiledCode,
-  AccountAppUnlock: blueprint.validators[2].compiledCode,
-  AccountUserUnlock: blueprint.validators[5].compiledCode,
-  AccountOracleValidator: blueprint.validators[6].compiledCode,
-  EmergencyToken: blueprint.validators[8].compiledCode,
-  EmergencyUnlock: blueprint.validators[10].compiledCode,
-  AccountOracleNFT: blueprint.validators[12].compiledCode,
+  Account: blueprint.validators[0]!.compiledCode,
+  AccountAppUnlock: blueprint.validators[2]!.compiledCode,
+  AccountUserUnlock: blueprint.validators[5]!.compiledCode,
+  AccountOracleValidator: blueprint.validators[6]!.compiledCode,
+  EmergencyToken: blueprint.validators[8]!.compiledCode,
+  EmergencyUnlock: blueprint.validators[10]!.compiledCode,
+  AccountOracleNFT: blueprint.validators[12]!.compiledCode,
 };
 
 export const scriptParams: ScriptParams = {

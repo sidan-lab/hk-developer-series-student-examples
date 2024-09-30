@@ -193,7 +193,7 @@ export class MeshTx {
   accountAddress?: string;
 
   constructor(public wallet: MeshWallet, params?: ScriptParams) {
-    const address = this.wallet.getUsedAddresses()[0];
+    const address = this.wallet.getUsedAddresses()[0]!;
     if (params) {
       this.params = params;
     }
@@ -220,10 +220,10 @@ export class MeshTx {
     const txBuilder = await this.newTx();
     const collateral = (await this.wallet.getCollateral())[0];
     txBuilder.txInCollateral(
-      collateral.input.txHash,
-      collateral.input.outputIndex,
-      collateral.output.amount,
-      collateral.output.address
+      collateral!.input.txHash,
+      collateral!.input.outputIndex,
+      collateral!.output.amount,
+      collateral!.output.address
     );
     return txBuilder;
   };
