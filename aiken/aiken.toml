@@ -1,6 +1,6 @@
 name = "sidan-lab/aiken-pbl-hk"
 version = "0.0.0"
-compiler = "v1.1.1"
+compiler = "v1.1.5"
 plutus = "v3"
 license = "Apache-2.0"
 description = "Aiken contracts for project 'sidan-lab/aiken-pbl-hk'"
@@ -12,7 +12,7 @@ platform = "github"
 
 [[dependencies]]
 name = "aiken-lang/stdlib"
-version = "v2"
+version = "v2.1.0"
 source = "github"
 
 [[dependencies]]
